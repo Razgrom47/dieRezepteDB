@@ -23,7 +23,7 @@ def get_all_meals():
     identifier_meal = 2764
     api_call_id = "https://www.themealdb.com/api/json/v1/1/lookup.php?i=5"
     count = 0 # 303 valid recepies found
-    bar = progressbar.ProgressBar(maxval=303, widgets=[progressbar.Bar('░', '▕', '▏'), ' - ', progressbar.Percentage()])
+    bar = progressbar.ProgressBar(maxval=303, widgets=[progressbar.Bar('░', '\t Meals download proccess \t▕', '▏Completed'), ' ፠ ', progressbar.Percentage()])
     print("Getting all meals ...")
     bar.start()
     missing = set()
@@ -37,7 +37,7 @@ def get_all_meals():
                 
                 #print(json.dumps(json.loads(response.text), indent=4, sort_keys=True))
                 strMeal=json_dict_response["strMeal"].replace("'", " ")
-                pathImageMeal="/images/meals/"+json_dict_response["strMeal"]+".jpg"
+                pathImageMeal="/images/meals/"+json_dict_response["strMeal"].replace("'", " ")+".jpg"
                 try:
                     strInstructions=json_dict_response["strInstructions"].replace("'", " ") or ""
                 except:
@@ -86,7 +86,7 @@ def get_all_meals():
                 strMeasure18=json_dict_response["strMeasure18"] or ""
                 strMeasure19=json_dict_response["strMeasure19"] or ""
                 strMeasure20=json_dict_response["strMeasure20"] or ""
-                #conn.execute(insert_meals+f"('{strMeal}', '{pathImageMeal}', '{strInstructions}', '{strArea}', '{strCategory}', '{strTags}', '{strYoutube}', '{strIngredient1}', '{strIngredient2}', '{strIngredient3}', '{strIngredient4}', '{strIngredient5}', '{strIngredient6}', '{strIngredient7}', '{strIngredient8}', '{strIngredient9}', '{strIngredient10}', '{strIngredient11}', '{strIngredient12}', '{strIngredient13}', '{strIngredient14}', '{strIngredient15}', '{strIngredient16}', '{strIngredient17}', '{strIngredient18}', '{strIngredient19}', '{strIngredient20}', '{strMeasure1}', '{strMeasure2}', '{strMeasure3}', '{strMeasure4}', '{strMeasure5}', '{strMeasure6}', '{strMeasure7}', '{strMeasure8}', '{strMeasure9}', '{strMeasure10}', '{strMeasure11}', '{strMeasure12}', '{strMeasure13}', '{strMeasure14}', '{strMeasure15}', '{strMeasure16}', '{strMeasure17}', '{strMeasure18}', '{strMeasure19}', '{strMeasure20}');")
+                conn.execute(insert_meals+f"('{strMeal}', '{pathImageMeal}', '{strInstructions}', '{strArea}', '{strCategory}', '{strTags}', '{strYoutube}', '{strIngredient1}', '{strIngredient2}', '{strIngredient3}', '{strIngredient4}', '{strIngredient5}', '{strIngredient6}', '{strIngredient7}', '{strIngredient8}', '{strIngredient9}', '{strIngredient10}', '{strIngredient11}', '{strIngredient12}', '{strIngredient13}', '{strIngredient14}', '{strIngredient15}', '{strIngredient16}', '{strIngredient17}', '{strIngredient18}', '{strIngredient19}', '{strIngredient20}', '{strMeasure1}', '{strMeasure2}', '{strMeasure3}', '{strMeasure4}', '{strMeasure5}', '{strMeasure6}', '{strMeasure7}', '{strMeasure8}', '{strMeasure9}', '{strMeasure10}', '{strMeasure11}', '{strMeasure12}', '{strMeasure13}', '{strMeasure14}', '{strMeasure15}', '{strMeasure16}', '{strMeasure17}', '{strMeasure18}', '{strMeasure19}', '{strMeasure20}');")
                 #print(f" \t [{count}] MEAL: ["+json_dict_response["idMeal"]+"] "+json_dict_response["strMeal"]+"\n \t STATUS: Completed: ", round(round(count/303, 3)*100, 2),"% \t | \t Remaining: ", round((1-round(count/303, 3))*100, 2), "%")
                 bar.update(count)
                 count=count+1
@@ -96,8 +96,8 @@ def get_all_meals():
             print(f"ERROR: {err}")
             missing.add("["+ json_dict_response["idMeal"]+ "]")
             missing.add(json_dict_response["strMeal"])
-            break
-    #print(missing)
+            
+    print(missing)
     conn.commit()
     conn.close()
     bar.finish()
@@ -121,7 +121,7 @@ def get_all_ingredients():
 
     api_call_id = "https://www.themealdb.com/api/json/v1/1/list.php?i=list"
     count = 0 # 575 valid recepies found
-    bar = progressbar.ProgressBar(maxval=575, widgets=[progressbar.Bar('▓', '▐','▌'), '  - ', progressbar.Percentage()])
+    bar = progressbar.ProgressBar(maxval=575, widgets=[progressbar.Bar('▓', '\t Ingredients download proccess \t ▐','▌Completed'), ' ፠ ', progressbar.Percentage()])
     print("Getting all ingredients ...")
     bar.start()
     missing = set()
@@ -142,7 +142,7 @@ def get_all_ingredients():
                 except:
                     strDescript=x["strDescription"] or ""
                 strType=x["strType"]
-                strPath="/images/ingredients/"+x["strIngredient"]+".png"
+                strPath="/images/ingredients/"+x["strIngredient"].replace("'", " ")+".png"
                 strPathSmall="images/ingredients/small/"+x["strIngredient"]+"-Small.png"
                 conn.execute(insert_ingredients+f"('{strIng}', '{strDescript}', '{strType}', '{strPath}', '{strPathSmall}' );")
                 count=count+1
@@ -164,7 +164,7 @@ def get_all_ingredients():
     
 def main():
     #getting all ingredients 
-    # done get_all_ingredients() 
+    get_all_ingredients() 
     #getting all meals
     get_all_meals()
 

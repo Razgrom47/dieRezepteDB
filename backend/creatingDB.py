@@ -86,7 +86,10 @@ FOREIGN KEY (strIngredient20) REFERENCES INGREDIENTS(strIngredient)
 );
 """
 
-insert_ingredients = """INSERT INTO INGREDIENTS (strIngredient, strDescription, strType, pathImageIngredient, pathSmallImageIngredient) 
+insert_ingredients = """INSERT INTO INGREDIENTS (idIngredient, strIngredient) 
+VALUES"""#(?,?,?,?,?)"""
+
+insert_meals = """INSERT INTO MEALS (idMeal, strMeal, strArea) 
 VALUES"""#(?,?,?,?,?)"""
 
 #--- SQLite DataBase
@@ -96,14 +99,19 @@ if os.path.exists(cwd+r"\themealdb\myDB.db") == False:
 with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
     try:
         print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
-        #conn.execute(drop_table_ingredients)
-        #conn.execute(table_ingredients)
+        conn.execute(drop_table_ingredients)
+        conn.execute(table_ingredients)
         conn.execute(drop_table_meals)
         conn.execute(table_meals)
-        #conn.commit()
-        #conn.execute(insert_ingredients+f"('{name}', '{description}', '{typeNAME}', '{path}', '{pathSmall}' );")
         conn.commit()
-        #print(conn.execute("SELECT * FROM INGREDIENTS").fetchall())
+        #Setting starting point
+        conn.execute(insert_ingredients+f"(848483,'dummy');")
+        conn.execute(insert_meals+f"(848483,'dummy','NOWHERE');")
+        #conn.execute(f"DELETE FROM INGREDIENTS WHERE idIngredient=848483 and strIngredient='dummy';")
+        #conn.execute(f"DELETE FROM MEALS WHERE idMeal=848483 and strMeal='dummy' and strArea='NOWHERE';")
+        conn.commit()
+        print(conn.execute("SELECT * FROM INGREDIENTS").fetchall())
+        print(conn.execute("SELECT * FROM MEALS").fetchall())
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
     except Exception as err:
