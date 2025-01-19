@@ -1,3 +1,4 @@
+.gitignore
 /.venv/
 /backend/sqlquery.py
 /backend/test.py
