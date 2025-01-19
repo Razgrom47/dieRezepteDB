@@ -1,6 +1,6 @@
 import sqlite3, os
 cwd = (os.path.abspath(os.getcwd()))
-
+cwd = cwd + r"\backend"
 drop_table_ingredients="DROP TABLE IF EXISTS INGREDIENTS"
 table_ingredients ="""
 CREATE TABLE INGREDIENTS(

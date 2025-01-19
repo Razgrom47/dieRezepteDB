@@ -1,2 +1,3 @@
 /.venv/
-sqlquery.py
+/backend/sqlquery.py
+/backend/test.py
