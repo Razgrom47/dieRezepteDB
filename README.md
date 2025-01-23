@@ -15,5 +15,5 @@ deactivate
 
 ### React / Vite
 
-npm install
+npm install @mui/material @mui/icons-material @emotion/react @emotion/styled @toolpad/core vite@latest
 npm run dev
