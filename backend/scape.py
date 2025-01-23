@@ -32,8 +32,8 @@ def get_all_meals():
             response = requests.get(api_call_id+str(i))
             if json.loads(response.text)["meals"] is not None:
                 json_dict_response = json.loads(response.text)["meals"][0]
-                if os.path.exists(cwd+r"\images\\meals\\"+json_dict_response["strMeal"]+".jpg") == False:
-                    rq.urlretrieve(json_dict_response["strMealThumb"].replace(" ", "%20").replace('\xe8', "e"), cwd+r"\images\\meals\\"+json_dict_response["strMeal"]+".jpg")
+                if os.path.exists(cwd+r"\frontend\public\images\\meals\\"+json_dict_response["strMeal"]+".jpg") == False:
+                    rq.urlretrieve(json_dict_response["strMealThumb"].replace(" ", "%20").replace('\xe8', "e"), cwd+r"\frontend\public\images\\meals\\"+json_dict_response["strMeal"]+".jpg")
                 
                 #print(json.dumps(json.loads(response.text), indent=4, sort_keys=True))
                 strMeal=json_dict_response["strMeal"].replace("'", " ")
@@ -131,10 +131,10 @@ def get_all_ingredients():
         #print(json.dumps(json_dict_response["meals"][158], indent=4, sort_keys=True))
         for x in json_dict_response["meals"]:
             try:        
-                if os.path.exists(cwd+r"\images\\ingredients\\"+x["strIngredient"]+".png") == False:
-                    rq.urlretrieve("https://www.themealdb.com/images/ingredients/"+x["strIngredient"].replace(" ", "%20").replace('\xe8', "e")+".png", cwd+r"\images\\ingredients\\"+x["strIngredient"]+".png")
-                if os.path.exists(cwd+r"\images\\ingredients\\small\\"+x["strIngredient"]+".png") == False:
-                    rq.urlretrieve("https://www.themealdb.com/images/ingredients/"+x["strIngredient"].replace(" ", "%20").replace('\xe8', "e")+"-Small.png", cwd+r"\images\\ingredients\\small\\"+x["strIngredient"]+"-Small.png")
+                if os.path.exists(cwd+r"\frontend\public\images\\ingredients\\"+x["strIngredient"]+".png") == False:
+                    rq.urlretrieve("https://www.themealdb.com/images/ingredients/"+x["strIngredient"].replace(" ", "%20").replace('\xe8', "e")+".png", cwd+r"\frontend\public\images\\ingredients\\"+x["strIngredient"]+".png")
+                if os.path.exists(cwd+r"\frontend\public\images\\ingredients\\small\\"+x["strIngredient"]+".png") == False:
+                    rq.urlretrieve("https://www.themealdb.com/images/ingredients/"+x["strIngredient"].replace(" ", "%20").replace('\xe8', "e")+"-Small.png", cwd+r"\frontend\public\images\\ingredients\\small\\"+x["strIngredient"]+"-Small.png")
                 
                 strIng = x["strIngredient"]
                 try:
@@ -143,7 +143,7 @@ def get_all_ingredients():
                     strDescript=x["strDescription"] or ""
                 strType=x["strType"]
                 strPath="/images/ingredients/"+x["strIngredient"].replace("'", " ")+".png"
-                strPathSmall="images/ingredients/small/"+x["strIngredient"]+"-Small.png"
+                strPathSmall="/images/ingredients/small/"+x["strIngredient"]+"-Small.png"
                 conn.execute(insert_ingredients+f"('{strIng}', '{strDescript}', '{strType}', '{strPath}', '{strPathSmall}' );")
                 count=count+1
                 #print(f" \t [{count}] INGREDIENT: ["+x["idIngredient"]+"] "+x["strIngredient"]+"\n \t STATUS: Completed: ", round(round(count/608, 3)*100, 2),"% \t | \t Remaining: ", round((1-round(count/608, 3))*100, 2), "%") 
@@ -186,53 +186,100 @@ ingredients_values = {
     "pathSmallImageIngredient":"./images/ingredients/small/Prunes-Small.png",
 }
 meal_values = {
-    "pathImageMeal":"./images/meals/Garides Saganaki.jpg",
-    "idMeal": "52764",
-    "strArea": "Greek",
-    "strCategory": "Seafood",
-    "strIngredient1": "Raw king prawns",
-    "strIngredient10": "",
-    "strIngredient11": "",
-    "strIngredient12": "",
-    "strIngredient13": "",
-    "strIngredient14": "",
-    "strIngredient15": "",
-    "strIngredient16": "",
-    "strIngredient17": "",
-    "strIngredient18": "",
-    "strIngredient19": "",
-    "strIngredient2": "Olive oil",
-    "strIngredient20": "",
-    "strIngredient3": "Chopped onion",
-    "strIngredient4": "Freshly chopped parsley",
-    "strIngredient5": "White wine",
-    "strIngredient6": "Chopped tomatoes",
-    "strIngredient7": "Minced garlic",
-    "strIngredient8": "Cubed Feta cheese",
-    "strIngredient9": "",
-    "strInstructions": "Place the prawns in a pot and add enough water to cover. Boil for 5 minutes. Drain, reserving the liquid, and set aside.\r\nHeat 2 tablespoons of oil in a saucepan. Add the onion; cook and stir until soft. Mix in the parsley, wine, tomatoes, garlic and remaining olive oil. Simmer, stirring occasionally, for about 30 minutes, or until the sauce is thickened.\r\nWhile the sauce is simmering, the prawns should become cool enough to handle. First remove the legs by pinching them, and then pull off the shells, leaving the head and tail on.\r\nWhen the sauce has thickened, stir in the prawns. Bring to a simmer again if the sauce has cooled with the prawns, and cook for about 5 minutes. Add the feta and remove from the heat. Let stand until the cheese starts to melt. Serve warm with slices of crusty bread.\r\nThough completely untraditional, you can add a few tablespoons of stock or passata to this recipe to make a delicious pasta sauce. Toss with pasta after adding the feta, and serve.",
+    #0
+    "idMeal": "52764", 
+    #1
     "strMeal": "Garides Saganaki",
-    "strMealThumb": "https://www.themealdb.com/images/media/meals/wuvryu1468232995.jpg",
-    "strMeasure1": "500g",
-    "strMeasure10": "",
-    "strMeasure11": "",
-    "strMeasure12": "",
-    "strMeasure13": "",
-    "strMeasure14": "",
-    "strMeasure15": "",
-    "strMeasure16": "",
-    "strMeasure17": "",
-    "strMeasure18": "",
-    "strMeasure19": "",
-    "strMeasure2": "3 tablespoons",
-    "strMeasure20": "",
-    "strMeasure3": "1",
-    "strMeasure4": "pinch",
-    "strMeasure5": "250ml",
-    "strMeasure6": "1 (400g) tin",
-    "strMeasure7": "1/2 teaspoon",
-    "strMeasure8": "1 (200g) pack",
-    "strMeasure9": "",
+    #2
+    "pathImageMeal":"./images/meals/Garides Saganaki.jpg",
+    #3
+    "strArea": "Greek",
+    #4
+    "strCategory": "Seafood",
+    #5
+    "strInstructions": "Place the prawns in a pot and add enough water to cover. Boil for 5 minutes. Drain, reserving the liquid, and set aside.\r\nHeat 2 tablespoons of oil in a saucepan. Add the onion; cook and stir until soft. Mix in the parsley, wine, tomatoes, garlic and remaining olive oil. Simmer, stirring occasionally, for about 30 minutes, or until the sauce is thickened.\r\nWhile the sauce is simmering, the prawns should become cool enough to handle. First remove the legs by pinching them, and then pull off the shells, leaving the head and tail on.\r\nWhen the sauce has thickened, stir in the prawns. Bring to a simmer again if the sauce has cooled with the prawns, and cook for about 5 minutes. Add the feta and remove from the heat. Let stand until the cheese starts to melt. Serve warm with slices of crusty bread.\r\nThough completely untraditional, you can add a few tablespoons of stock or passata to this recipe to make a delicious pasta sauce. Toss with pasta after adding the feta, and serve.",
+    #6
     "strTags": "Seafood,Shellfish",
-    "strYoutube": "https://www.youtube.com/watch?v=uO0ejc85zSE"
+    #7
+    "strYoutube": "https://www.youtube.com/watch?v=uO0ejc85zSE",
+    #8
+    "strIngredient1": "Raw king prawns",
+    #9
+    "strIngredient2": "",
+    #10
+    "strIngredient3": "",
+    #11
+    "strIngredient4": "",
+    #12
+    "strIngredient5": "",
+    #13
+    "strIngredient6": "",
+    #14
+    "strIngredient7": "",
+    #15
+    "strIngredient8": "",
+    #16
+    "strIngredient9": "",
+    #17
+    "strIngredient10": "",
+    #18
+    "strIngredient11": "",
+    #19
+    "strIngredient12": "Olive oil",
+    #20
+    "strIngredient13": "",
+    #21
+    "strIngredient14": "Chopped onion",
+    #22
+    "strIngredient15": "Freshly chopped parsley",
+    #23
+    "strIngredient16": "White wine",
+    #23
+    "strIngredient17": "Chopped tomatoes",
+    #24
+    "strIngredient18": "Minced garlic",
+    #25
+    "strIngredient19": "Cubed Feta cheese",
+    #26
+    "strIngredient20": "",
+    #27
+    "strMeasure1": "500g",
+    #28
+    "strMeasure2": "",
+    #29
+    "strMeasure3": "",
+    #30
+    "strMeasure4": "",
+    #31
+    "strMeasure5": "",
+    #32
+    "strMeasure6": "",
+    #33
+    "strMeasure7": "",
+    #34
+    "strMeasure8": "",
+    #35
+    "strMeasure9": "",
+    #36
+    "strMeasure10": "",
+    #37
+    "strMeasure11": "",
+    #38
+    "strMeasure12": "3 tablespoons",
+    #39
+    "strMeasure13": "",
+    #40
+    "strMeasure14": "1",
+    #41
+    "strMeasure15": "pinch",
+    #42
+    "strMeasure16": "250ml",
+    #43
+    "strMeasure17": "1 (400g) tin",
+    #44
+    "strMeasure18": "1/2 teaspoon",
+    #45
+    "strMeasure19": "1 (200g) pack",
+    #46
+    "strMeasure20": ""
 }
