@@ -14,7 +14,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout, ThemeSwitcher } from '@toolpad/core/DashboardLayout';
 import { useDemoRouter } from '@toolpad/core/internal';
-import Mealliste from './Mealsliste'
+import { useEffect } from 'react';
+import { useState } from 'react';
+import MealsListe from './Mealsliste';
+import IngredientsListe from './IngredientListe';
 
 const NAVIGATION = [
   {
@@ -22,12 +25,12 @@ const NAVIGATION = [
     title: 'Main items',
   },
   {
-    segment: 'dashboard',
+    segment: 'meals',
     title: 'Meals',
     icon: <DashboardIcon />,
   },
   {
-    segment: 'orders',
+    segment: 'ingredients',
     title: 'Ingredients',
     icon: <ShoppingCartIcon />,
   },
@@ -50,19 +53,46 @@ const demoTheme = createTheme({
 });
 
 function DemoPageContent({ pathname }) {
+  const [meals, setMeals] = useState();
+  const [ingredients, setIngredients] = useState();
+  if (pathname === "/meals") {
+    
+     useEffect(() => {
+        fetch('http://127.0.0.1:7700/meals/')
+            .then(response => response.json())
+            .then(data => {
+                setMeals(data.meals);
+            })
+            .catch(error => {
+                console.error('Fehler beim Abrufen:', error);
+            });
+    }, []);
+  }
+  if (pathname === "/ingredients") {
+    
+     useEffect(() => {
+        fetch('http://127.0.0.1:7700/ingredients/')
+            .then(response => response.json())
+            .then(data => {
+                setIngredients(data.ingredients);
+            })
+            .catch(error => {
+                console.error('Fehler beim Abrufen:', error);
+            });
+    }, []);
+  }
   return (
-    <Box
-      sx={{
-        py: 4,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        textAlign: 'center',
-      }}
-    >
+    <>
       <Typography>Dashboard content for {pathname}</Typography>
-      <Mealliste></Mealliste>
-    </Box>
+      {pathname === "/meals" ? (
+        <MealsListe meals = {meals}></MealsListe>
+      ) : ( pathname === "/ingredients" ? (
+        <IngredientsListe ingredients = {ingredients}></IngredientsListe>
+        
+      ) : ( null ) )}
+      
+      
+    </>
   );
 }
 
@@ -136,7 +166,7 @@ function CustomAppTitle() {
 function DashboardLayoutSlots(props) {
   const { window } = props;
 
-  const router = useDemoRouter('/dashboard');
+  const router = useDemoRouter('/meals');
 
   // Remove this const when copying and pasting into your project.
   const demoWindow = window !== undefined ? window() : undefined;
