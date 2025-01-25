@@ -292,4 +292,4 @@ def ingredientsByTags(ingr):
         return jsonify({"error":"data not found"})
     
 if __name__ == "__main__":    
-    app.run(debug=True, port=7700)
+    app.run(debug=True, port=7700, host="0.0.0.0")

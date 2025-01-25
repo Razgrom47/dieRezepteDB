@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
   import * as React from 'react';
  import { styled } from '@mui/material/styles';
  import Card from '@mui/material/Card';
@@ -6,10 +7,8 @@
  import CardContent from '@mui/material/CardContent';
  import CardActions from '@mui/material/CardActions';
  import Collapse from '@mui/material/Collapse';
- import Avatar from '@mui/material/Avatar';
  import IconButton from '@mui/material/IconButton';
  import Typography from '@mui/material/Typography';
- import { red } from '@mui/material/colors';
  import FavoriteIcon from '@mui/icons-material/Favorite';
  import ShareIcon from '@mui/icons-material/Share';
  import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -17,6 +16,7 @@
 import Link from '@mui/material/Link';
  
  const ExpandMore = styled((props) => {
+   // eslint-disable-next-line no-unused-vars
    const { expand, ...other } = props;
    return <IconButton {...other} />;
  })(({ theme }) => ({
@@ -48,7 +48,7 @@ import Link from '@mui/material/Link';
    };
  
    return (
-     <Card sx={{ maxWidth: 345 }}>
+     <Card sx={{ width: "22rem", minHeight:"63vh" }}>
        <CardHeader
          action={
            <IconButton aria-label="settings">
@@ -60,7 +60,7 @@ import Link from '@mui/material/Link';
        />
        <CardMedia
          component="img"
-         height="194"
+         height="fit-content"
          image={meal.pathImageMeal}
          alt={meal.strMeal}
        />

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
@@ -6,17 +7,15 @@ import CardMedia from '@mui/material/CardMedia';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Link from '@mui/material/Link';
 
 const ExpandMore = styled((props) => {
+  // eslint-disable-next-line no-unused-vars
   const { expand, ...other } = props;
   return <IconButton {...other} />;
 })(({ theme }) => ({
@@ -40,7 +39,7 @@ const ExpandMore = styled((props) => {
   ],
 }));
 
-export default function IngredientRecipeReviewCard({ingredient}) {
+export default function MealRecipeReviewCard({ ingredient }) {
   const [expanded, setExpanded] = React.useState(false);
 
   const handleExpandClick = () => {
@@ -48,25 +47,24 @@ export default function IngredientRecipeReviewCard({ingredient}) {
   };
 
   return (
-    <Card sx={{ maxWidth: 345 }}>
+    <Card sx={{ width: "22rem", minHeight:"45vh" }}>
       <CardHeader
         action={
           <IconButton aria-label="settings">
             <MoreVertIcon />
           </IconButton>
         }
-        subheader={ingredient.strType}
         title={ingredient.strIngredient}
       />
       <CardMedia
         component="img"
-        height="194"
+        height="fit-content"
         image={ingredient.pathImageIngredient}
         alt={ingredient.strIngredient}
       />
       <CardContent>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-        {ingredient.strTags}
+        {ingredient.strType != "None" && ingredient.strType}
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
@@ -96,3 +94,10 @@ export default function IngredientRecipeReviewCard({ingredient}) {
     </Card>
   );
 }
+
+        
+  
+        
+       
+         
+          
