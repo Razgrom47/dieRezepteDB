@@ -32,7 +32,10 @@ with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
 def token_required(func):
     @wraps(func)    
     def decorated(*argx, **kwargs):
-        token = request.authorization.token
+        try:
+            token = request.authorization.token
+        except:
+            return jsonify({"Alert!": "Invalid token."}), 403  # Provide a response with an error status code
         if not token:
             return jsonify({"Alert!": "Token is missing."}), 403  # Provide a response with an error status code
         try:
@@ -46,11 +49,28 @@ def token_required(func):
 
 @app.route("/login", methods=["POST"])
 def login():
-    if True:
+    with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+        try:
+            print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+            conn.row_factory = sqlite3.Row
+            all_users=[dict(row) for row in conn.cursor().execute("SELECT * FROM USERS").fetchall()]
+            print(all_users)
+            print(json.loads(request.data))
+            for existingUser in all_users:
+                if existingUser["strUser"] == json.loads(request.data)["username"] and existingUser["strPassword"] == json.loads(request.data)["password"]:
+                    currentUser = existingUser
+                    break
+                else:
+                    currentUser = None
+        except sqlite3.OperationalError as e:
+            return("Failed to open database:", e)
+        except Exception as err:
+            return(f"ERROR: {err}")
+    if currentUser:
         session['logged_in'] = True
         token = jwt.encode(
             {
-                "user":"John Doe",
+                "user":currentUser["strUser"],
                 "expiration":str(datetime.utcnow() + timedelta(minutes=10))
             }, 
             app.config["SECRET_KEY"])

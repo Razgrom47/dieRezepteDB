@@ -86,6 +86,31 @@ FOREIGN KEY (strIngredient20) REFERENCES INGREDIENTS(strIngredient)
 );
 """
 
+drop_table_users = """DROP TABLE IF EXISTS USERS;"""
+create_table_users = """CREATE TABLE USERS(
+idUser INTEGER PRIMARY KEY,
+strUser VARCHAR(255) NOT NULL,
+strPassword TEXT NOT NULL
+);"""
+
+drop_table_Fav_Meals = """DROP TABLE IF EXISTS FAV_MEALS;"""
+create_table_Fav_Meals = """CREATE TABLE FAV_MEALS (
+idUser INTEGER NOT NULL,
+idMeal INTEGER NOT NULL,
+PRIMARY KEY (idUser, idMeal),
+FOREIGN KEY (idUser) REFERENCES USERS(idUser)
+FOREIGN KEY (idMeal) REFERENCES MEALS(idMeal)
+);"""
+
+drop_table_Fav_Ingredients = """DROP TABLE IF EXISTS FAV_INGREDIENTS;"""
+create_table_Fav_Ingredients = """CREATE TABLE FAV_INGREDIENTS (
+idUser INTEGER NOT NULL,
+idIngredient INTEGER NOT NULL,
+PRIMARY KEY (idUser, idIngredient),
+FOREIGN KEY (idUser) REFERENCES USERS(idUser)
+FOREIGN KEY (idIngredient) REFERENCES MEALS(idIngredient)
+);"""
+
 insert_ingredients = """INSERT INTO INGREDIENTS (idIngredient, strIngredient) 
 VALUES"""#(?,?,?,?,?)"""
 
@@ -99,19 +124,39 @@ if os.path.exists(cwd+r"\themealdb\myDB.db") == False:
 with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
     try:
         print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
-        conn.execute(drop_table_ingredients)
-        conn.execute(table_ingredients)
-        conn.execute(drop_table_meals)
-        conn.execute(table_meals)
+        #Meals
+        #conn.execute(drop_table_meals)
+        #conn.execute(table_meals)
+        #Ingredients
+        #conn.execute(drop_table_ingredients)
+        #conn.execute(table_ingredients)
+        #Users
+        conn.execute(drop_table_users)
+        conn.execute(create_table_users)
         conn.commit()
+        conn.execute(f"INSERT INTO USERS (strUser, strPassword) VALUES ('admin', 'admin');")
+        #Favorite Meals
+        conn.execute(drop_table_Fav_Meals)
+        conn.execute(create_table_Fav_Meals)
+        conn.commit()
+        #conn.execute(f"INSERT INTO FAV_MEALS (idUser, idMeal) VALUES (1, 848484);")
+        #Favorite Ingredients
+        conn.execute(drop_table_Fav_Ingredients)
+        conn.execute(create_table_Fav_Ingredients)
+        conn.commit()
+        #conn.execute(f"INSERT INTO FAV_INGREDIENTS (idUser, idIngredient) VALUES (1, 848484);")
         #Setting starting point
-        conn.execute(insert_ingredients+f"(848483,'dummy');")
-        conn.execute(insert_meals+f"(848483,'dummy','NOWHERE');")
+        #conn.execute(insert_ingredients+f"(848483,'dummy');")
+        #conn.execute(insert_meals+f"(848483,'dummy','NOWHERE');")
         #conn.execute(f"DELETE FROM INGREDIENTS WHERE idIngredient=848483 and strIngredient='dummy';")
         #conn.execute(f"DELETE FROM MEALS WHERE idMeal=848483 and strMeal='dummy' and strArea='NOWHERE';")
         conn.commit()
-        print(conn.execute("SELECT * FROM INGREDIENTS").fetchall())
-        print(conn.execute("SELECT * FROM MEALS").fetchall())
+        #print(conn.execute("SELECT * FROM INGREDIENTS").fetchall())
+        #print(conn.execute("SELECT * FROM MEALS").fetchall())
+        print(conn.execute("SELECT * FROM USERS").fetchall())
+        #print(conn.execute("SELECT * FROM FAV_MEALS").fetchall())
+        #print(conn.execute("SELECT * FROM FAV_INGREDIENTS").fetchall())
+        #print(conn.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall())
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
     except Exception as err:
