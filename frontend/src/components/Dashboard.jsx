@@ -26,6 +26,7 @@ import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import TuneTwoToneIcon from '@mui/icons-material/TuneTwoTone';
 import Profile from './Profile';
 import Home from './Home';
+import Meal from './Meal';
 
 // Define the colors for primary, secondary, and third colors
 // const primaryDark = '#98FF98'; // light Green for dark mode
@@ -43,7 +44,7 @@ const NAVIGATION = [
   { segment: 'profile', title: 'Profile', icon: <AccountCircleTwoToneIcon sx={{ color: "#98FF98" }}/> },
   { segment: 'meals', title: 'Meals', icon: <DinnerDiningTwoToneIcon sx={{ color: "#98FF98" }} /> },
   { segment: 'ingredients', title: 'Ingredients', icon: <ShoppingCartIcon sx={{ color: "#98FF98" }}/> },
-  { segment: 'meals/filter', title: 'MealFilter', icon: <TuneTwoToneIcon sx={{ color: "#98FF98" }}/> },
+  { segment: 'meal/filter', title: 'MealFilter', icon: <TuneTwoToneIcon sx={{ color: "#98FF98" }}/> },
   { segment: 'meals/ingredient', title: 'MealFilterByIngredients', icon: <MenuBookTwoToneIcon sx={{ color: "#98FF98" }}/> },
   { segment: 'meals/area', title: 'MealFilterByArea', icon: <PublicTwoToneIcon sx={{ color: "#98FF98" }}/> },
   { segment: 'meals/tag', title: 'MealFilterByTag', icon: <LoyaltyTwoToneIcon sx={{ color: "#98FF98" }}/> },
@@ -52,6 +53,7 @@ const NAVIGATION = [
 
 function DemoPageContent({ pathname }) {
   const [meals, setMeals] = useState();
+  const [meal, setMeal] = useState();
   const [ingredients, setIngredients] = useState();
 
   useEffect(() => {
@@ -71,14 +73,27 @@ function DemoPageContent({ pathname }) {
         .catch((error) => console.error('Error fetching ingredients:', error));
     }
   }, [pathname]);
+  useEffect(() => {
+    if (pathname === '/meal/filter') {
+      fetch('http://127.0.0.1:7700/meals/id/848484')
+        .then((response) => response.json())
+        .then((data) => {setMeal(data.meal); console.log(data.meal)})
+        .catch((error) => console.error('Error fetching meal:', error));
+    }
+  }, [pathname]);
 
   return (
     <>
       <Box sx={{justifyItems:"center" }}>
-        <Typography sx={{ fontSize: "2.125rem"}}>Dashboard {pathname === '/meals' && "Meals"}{pathname === '/ingredients' && "Ingredients"}</Typography>
+        <Typography sx={{ fontSize: "2.125rem"}}>    
+          {pathname === '/meals' && " Meals"}
+          {pathname === '/meal/filter' && " Meal"}
+          {pathname === '/ingredients' && " Ingredients"}
+        </Typography>
       </Box>
       {pathname === '/home' && <Home/>}
       {pathname === '/meals' && <MealsListe meals={meals} />}
+      {pathname === '/meal/filter' && <Meal meal={meal} />}
       {pathname === '/ingredients' && <IngredientsListe ingredients={ingredients} />}
       {pathname === '/profile' && <Profile />}
     </>

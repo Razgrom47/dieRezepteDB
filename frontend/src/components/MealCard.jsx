@@ -13,9 +13,9 @@
  import ShareIcon from '@mui/icons-material/Share';
  import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
  import MoreVertIcon from '@mui/icons-material/MoreVert';
-import Link from '@mui/material/Link';
+import { Button } from '@mui/material';
  
- const ExpandMore = styled((props) => {
+const ExpandMore = styled((props) => {
    // eslint-disable-next-line no-unused-vars
    const { expand, ...other } = props;
    return <IconButton {...other} />;
@@ -48,7 +48,7 @@ import Link from '@mui/material/Link';
    };
  
    return (
-     <Card sx={{ width: "22rem", minHeight:"63vh" }}>
+     <Card sx={{ width: "22rem" }}>
        <CardHeader
          action={
            <IconButton aria-label="settings">
@@ -65,8 +65,24 @@ import Link from '@mui/material/Link';
          alt={meal.strMeal}
        />
        <CardContent>
-         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-         <Link href={meal.strYoutube}> Youtube </Link>
+         <Typography variant="body2">
+         <Button
+                variant="contained"
+                href={meal?.strYoutube}
+                
+                sx={{
+                  backgroundColor:"#98FF98",
+                  borderRadius: 25,
+                  padding: '14px 40px',
+                  fontWeight: 600,
+                  boxShadow: 3,
+                  '&:hover': {
+                    boxShadow: 10,
+                  },
+                }}
+              >
+                Watch Video
+              </Button>
          </Typography>
        </CardContent>
        <CardActions disableSpacing>

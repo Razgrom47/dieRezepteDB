@@ -1,7 +1,16 @@
 import json, sqlite3, os
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, make_response, session
+import jwt  #python 3.6 or later
+from datetime import timedelta, datetime
+from functools import wraps    
 from flask_cors import CORS
+import uuid
+my_secret = uuid.uuid4().hex
+print("MY SERVER SECRET: ", my_secret)
+
 app = Flask(__name__)
+app.config["SECRET_KEY"] = my_secret
+
 CORS(app, origins=["*"])
 
 cwd = (os.path.abspath(os.getcwd()))
@@ -19,8 +28,39 @@ with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
     except Exception as err:
         print(f"ERROR: {err}")
 
+# Token validation decorator
+def token_required(func):
+    @wraps(func)    
+    def decorated(*argx, **kwargs):
+        token = request.authorization.token
+        if not token:
+            return jsonify({"Alert!": "Token is missing."}), 403  # Provide a response with an error status code
+        try:
+            payload = jwt.decode(token, app.config["SECRET_KEY"], algorithms=["HS256"])
+        except Exception as err:
+            print(err)
+            return jsonify({"Alert!": "Invalid token."}), 403  # Provide a response with an error status code
+        return func(*argx, **kwargs)  # Call the decorated function
+    return decorated
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    if True:
+        session['logged_in'] = True
+        token = jwt.encode(
+            {
+                "user":"John Doe",
+                "expiration":str(datetime.utcnow() + timedelta(minutes=10))
+            }, 
+            app.config["SECRET_KEY"])
+        return jsonify({"token": token})
+    else:
+        return make_response("Unable to verify", 403, {'WWW-Authenicate:':'Basic realm:"Authenication Failed!"'})
+
 # Getting all meals
 @app.route('/meals/', methods=["GET"])
+@token_required
 def meals():
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:

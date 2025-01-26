@@ -5,7 +5,6 @@ const Profile = () => {
     name: "John Doe",
     password: "**********",
     country: "USA",
-    profilePicture: "https://via.placeholder.com/100", // Use an actual image URL here
     favoriteMeals: ["Spaghetti Carbonara", "Chicken Alfredo", "Sushi Rolls"],
     favoriteIngredients: ["Chicken", "Garlic", "Avocado"]
   };
