@@ -1,12 +1,9 @@
 import PropTypes from 'prop-types';
-import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import Chip from '@mui/material/Chip';
-import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
-import SearchIcon from '@mui/icons-material/Search';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout, ThemeSwitcher } from '@toolpad/core/DashboardLayout';
 import { useDemoRouter } from '@toolpad/core/internal';
@@ -16,17 +13,19 @@ import IngredientsListe from './IngredientListe';
 import demoTheme from './Theme';
 import { Box } from '@mui/material';
 import DinnerDiningTwoToneIcon from '@mui/icons-material/DinnerDiningTwoTone';
-import PublicTwoToneIcon from '@mui/icons-material/PublicTwoTone';
 import VerifiedTwoToneIcon from '@mui/icons-material/VerifiedTwoTone';
-import LoyaltyTwoToneIcon from '@mui/icons-material/LoyaltyTwoTone';
-import CategoryTwoToneIcon from '@mui/icons-material/CategoryTwoTone';
 import CottageTwoToneIcon from '@mui/icons-material/CottageTwoTone';
-import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
 import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import TuneTwoToneIcon from '@mui/icons-material/TuneTwoTone';
 import Profile from './Profile';
 import Home from './Home';
 import Meal from './Meal';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation
+} from "react-router-dom";
 
 // Define the colors for primary, secondary, and third colors
 // const primaryDark = '#98FF98'; // light Green for dark mode
@@ -38,108 +37,155 @@ import Meal from './Meal';
 // const accentLight = '#4A7DA8'; // Sky Blue for light mode
 // const neutral = '#BDC2D6'; // Light Gray/Blue
 
+
 const NAVIGATION = [
   { kind: 'header', title: 'Main items' },
-  { segment: 'home', title: 'Home', icon: <CottageTwoToneIcon sx={{ color: "#98FF98" }}/> },
-  { segment: 'profile', title: 'Profile', icon: <AccountCircleTwoToneIcon sx={{ color: "#98FF98" }}/> },
-  { segment: 'meals', title: 'Meals', icon: <DinnerDiningTwoToneIcon sx={{ color: "#98FF98" }} /> },
-  { segment: 'ingredients', title: 'Ingredients', icon: <ShoppingCartIcon sx={{ color: "#98FF98" }}/> },
-  { segment: 'meal/filter', title: 'MealFilter', icon: <TuneTwoToneIcon sx={{ color: "#98FF98" }}/> },
-  { segment: 'meals/ingredient', title: 'MealFilterByIngredients', icon: <MenuBookTwoToneIcon sx={{ color: "#98FF98" }}/> },
-  { segment: 'meals/area', title: 'MealFilterByArea', icon: <PublicTwoToneIcon sx={{ color: "#98FF98" }}/> },
-  { segment: 'meals/tag', title: 'MealFilterByTag', icon: <LoyaltyTwoToneIcon sx={{ color: "#98FF98" }}/> },
-  { segment: 'meals/category', title: 'MealFilterByCategory', icon: <CategoryTwoToneIcon sx={{ color: "#98FF98" }}/> },
+  { kind: 'divider', title: 'Main items' },
+  { segment: "home", title: 'Home', icon: <CottageTwoToneIcon sx={{ color: "#98FF98" }} />, link: '/home' },
+  { segment: "profile", title: 'Profile', icon: <AccountCircleTwoToneIcon sx={{ color: "#98FF98" }} />, link: '/profile' },
+  { segment: "meals", title: 'Meals', icon: <DinnerDiningTwoToneIcon sx={{ color: "#98FF98" }} />, link: '/meals' },
+  { segment: "ingredients", title: 'Ingredients', icon: <ShoppingCartIcon sx={{ color: "#98FF98" }} />, link: '/ingredients' },
+  { segment: "meal/filter", title: 'MealFilter', icon: <TuneTwoToneIcon sx={{ color: "#98FF98" }} />, link: "/meal/filter"},
 ];
 
-function DemoPageContent({ pathname }) {
+// eslint-disable-next-line react/prop-types
+function DemoPageContent() {
   const [meals, setMeals] = useState();
-  const [meal, setMeal] = useState();
   const [ingredients, setIngredients] = useState();
-
+  const [home_meals, setHomeMeals] = useState();
+  const [home_ingredients, setHomeIngredients] = useState();
+  const [meal, setMeal] = useState();
+  const { pathname, search } = useLocation();
+  const searchParams = new URLSearchParams(search); 
+  const query = searchParams.get("searchquery");
+  const ingredientsSearchquery = searchParams.get("ingredientsSearchquery");
+  const param = searchParams.get("param");
+  
+  // Effect zum Abrufen der Mahlzeiten basierend auf den Parametern
   useEffect(() => {
     if (pathname === '/meals') {
-      fetch('http://127.0.0.1:7700/meals/')
-        .then((response) => response.json())
-        .then((data) => setMeals(data.meals))
-        .catch((error) => console.error('Error fetching meals:', error));
+      let url = 'http://127.0.0.1:7700/meals/';
+      
+      if (query?.length > 0) {
+        switch (param) {
+          case 'Area':
+            url = `http://127.0.0.1:7700/meals/area/${query}`;
+            break;
+          case 'Category':
+            url = `http://127.0.0.1:7700/meals/category/${query}`;
+            break;
+          case 'Ingredient':
+            url = `http://127.0.0.1:7700/meals/ingredient/${query}`;
+            break;
+          case 'Tag':
+            url = `http://127.0.0.1:7700/meals/tag/${query}`;
+            break;
+          case 'Name':
+            url = `http://127.0.0.1:7700/meals/name/${query}`;
+            break;
+          default:
+            break;
+        }
+      }
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => setMeals(data.meals.filtered || data.meals))
+        .catch(error => console.error('Error fetching meals:', error));
+    }
+  }, [pathname, query, param]);
+
+  // Effect zum Abrufen der Zutaten
+  useEffect(() => {
+    if (pathname === '/ingredients') {
+      const ingredientsUrl = ingredientsSearchquery?.length > 0
+        ? `http://127.0.0.1:7700/ingredients/name/${ingredientsSearchquery}`
+        : 'http://127.0.0.1:7700/ingredients/';
+
+      fetch(ingredientsUrl)
+        .then(response => response.json())
+        .then(data => setIngredients(data.ingredients.filtered || data.ingredients))
+        .catch(error => console.error('Error fetching ingredients:', error));
+    }
+  }, [pathname, ingredientsSearchquery]);
+
+  // Effect für die Home-Seite mit den neuesten Zutaten und Mahlzeiten
+  useEffect(() => {
+    if (pathname === '/home') {
+      fetch('http://127.0.0.1:7700/ingredients/random/6')
+        .then(response => response.json())
+        .then(data => setHomeIngredients(data.ingredients.filtered))
+        .catch(error => console.error('Error fetching ingredients:', error));
+
+      fetch('http://127.0.0.1:7700/meals/latests/6')
+        .then(response => response.json())
+        .then(data => setHomeMeals(data.meals.filtered))
+        .catch(error => console.error('Error fetching meals:', error));
     }
   }, [pathname]);
 
-  useEffect(() => {
-    if (pathname === '/ingredients') {
-      fetch('http://127.0.0.1:7700/ingredients/')
-        .then((response) => response.json())
-        .then((data) => setIngredients(data.ingredients))
-        .catch((error) => console.error('Error fetching ingredients:', error));
-    }
-  }, [pathname]);
+  // Effekt zum Abrufen einer Mahlzeit bei Filteransicht
   useEffect(() => {
     if (pathname === '/meal/filter') {
       fetch('http://127.0.0.1:7700/meals/id/848484')
-        .then((response) => response.json())
-        .then((data) => {setMeal(data.meal); console.log(data.meal)})
-        .catch((error) => console.error('Error fetching meal:', error));
+        .then(response => response.json())
+        .then(data => setMeal(data.meal))
+        .catch(error => console.error('Error fetching meal:', error));
     }
   }, [pathname]);
 
   return (
-    <>
-      <Box sx={{justifyItems:"center" }}>
-        <Typography sx={{ fontSize: "2.125rem"}}>    
-          {pathname === '/meals' && " Meals"}
-          {pathname === '/meal/filter' && " Meal"}
-          {pathname === '/ingredients' && " Ingredients"}
-        </Typography>
-      </Box>
-      {pathname === '/home' && <Home/>}
+    <Box sx={{ justifyItems: "center" }}>
+
+      <Typography sx={{ fontSize: "2.125rem" }}>
+        {pathname === '/meals' && "Meals"}
+        {pathname === '/meal/filter' && "Meal"}
+        {pathname === '/ingredients' && "Ingredients"}
+        {pathname === '/home' && "Home Page"}
+        {pathname === '/ingredient/filter' && "Ingredient"}
+        {pathname === '/profile' && "Profile"}
+      </Typography>
+      
+      {/* Routing für Home-Seite */}
+      {pathname === '/home' && <Home latestMeals={home_meals} randomIngredients={home_ingredients} />}
+      
+      {/* Routing für Meals-Liste mit optionalen Filtern */}
       {pathname === '/meals' && <MealsListe meals={meals} />}
+      {pathname === '/meals/area' && <MealsListe meals={meals} />}
+      {pathname === '/meals/category' && <MealsListe meals={meals} />}
+      {pathname === '/meals/ingredient' && <MealsListe meals={meals} />}
+      {pathname === '/meals/name' && <MealsListe meals={meals} />}
+      
+      {/* Routing für Meal-Details bei Filteransicht */}
       {pathname === '/meal/filter' && <Meal meal={meal} />}
+      
+      {/* Routing für Ingredients-Liste */}
       {pathname === '/ingredients' && <IngredientsListe ingredients={ingredients} />}
+      
+      {/* Routing für Ingredient-Filter */}
+      {/*pathname === '/ingredient/filter' && <IngredientDetail />}
+      
+      {/* Routing für Profile-Seite */}
       {pathname === '/profile' && <Profile />}
-    </>
+    </Box>
   );
 }
 
-DemoPageContent.propTypes = {
-  pathname: PropTypes.string.isRequired,
-};
+
 
 function ToolbarActionsSearch() {
   return (
-    <Stack direction="row">
-      <Tooltip title="Search" enterDelay={1000}>
-        <div>
-          <IconButton type="button" aria-label="search" sx={{ display: { xs: 'inline', md: 'none' } }}>
-            <SearchIcon />
-          </IconButton>
-        </div>
-      </Tooltip>
-      <TextField
-        label="Search"
-        variant="outlined"
-        size="small"
-        slotProps={{
-          input: {
-            endAdornment: (
-              <IconButton type="button" aria-label="search" size="small">
-                <SearchIcon />
-              </IconButton>
-            ),
-            sx: { pr: 0.5 },
-          },
-        }}
-        sx={{ display: { xs: 'none', md: 'inline-block' }, mr: 1 }}
-      />
       <ThemeSwitcher />
-    </Stack>
   );
 }
 
 function SidebarFooter({ mini }) {
   return (
+    <>
     <Typography variant="caption" sx={{ m: 1, whiteSpace: 'nowrap', overflow: 'hidden' }}>
       {mini ? '© MUI' : `© ${new Date().getFullYear()} Made with love by MUI`}
     </Typography>
+    </>
   );
 }
 
@@ -158,29 +204,27 @@ function CustomAppTitle() {
   );
 }
 
-function DashboardLayoutSlots(props) {
-  const { window } = props;
-  const router = useDemoRouter('/home');
-  const demoWindow = window !== undefined ? window() : undefined;
-
-  return (
-    
-    <AppProvider navigation={NAVIGATION} router={router} theme={demoTheme} window={demoWindow}>
-      <DashboardLayout
-        slots={{
-          appTitle: CustomAppTitle,
-          toolbarActions: ToolbarActionsSearch,
-          sidebarFooter: SidebarFooter,
-        }}
-      >
-        <DemoPageContent pathname={router.pathname} />
-      </DashboardLayout>
-    </AppProvider>
-  );
-}
-
-DashboardLayoutSlots.propTypes = {
-  window: PropTypes.func,
-};
+function DashboardLayoutSlots() {
+    return (
+      <Router>
+        <AppProvider navigation={NAVIGATION} theme={demoTheme}>
+          <DashboardLayout
+            slots={{
+              appTitle: CustomAppTitle,
+              toolbarActions: ToolbarActionsSearch,
+              sidebarFooter: SidebarFooter,
+            }}>
+            <Routes>
+              <Route path="/home" element={<DemoPageContent />} />
+              <Route path="/meals" element={<DemoPageContent />} />
+              <Route path="/ingredients" element={<DemoPageContent />} />
+              <Route path="/meal/filter" element={<DemoPageContent />} />
+              <Route path="/profile" element={<DemoPageContent />} />
+            </Routes>
+          </DashboardLayout>
+        </AppProvider>
+      </Router>
+    );
+  }
 
 export default DashboardLayoutSlots;

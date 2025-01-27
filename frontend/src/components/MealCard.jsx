@@ -48,7 +48,7 @@ const ExpandMore = styled((props) => {
    };
  
    return (
-     <Card sx={{ width: "22rem" }}>
+     <Card sx={{ width: "22rem",  minHeight:"69vh" }}>
        <CardHeader
          action={
            <IconButton aria-label="settings">

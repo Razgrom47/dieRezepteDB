@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import IngredientRecipeReviewCard from "./IngredientCard";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import demoTheme from './Theme';
+import FilterSearchbar from './FilterSearchbar';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper, // Use background.paper for light/dark mode
@@ -41,6 +42,7 @@ export default function IngredientsListe({ ingredients }) {
         },
       })}
     >
+      <FilterSearchbar /> 
       <Box sx={{ width: '100%', padding: 3 }}> {/* Added padding for outer spacing */}
         <Grid container spacing={{ mobile: 2, tablet: 3, laptop: 4 }} justifyContent="center">
           {ingredients?.map((ingredient) => (

@@ -6,6 +6,7 @@ import Grid from '@mui/material/Grid';
 import MealRecipeReviewCard from "./MealCard";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import demoTheme from './Theme';
+import MealFilterSearchbar from "./MealFilterSearchbar";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.background.paper, // Use background.paper for light/dark mode
@@ -41,6 +42,7 @@ export default function MealsListe({ meals }) {
         },
       })}
     >
+      <MealFilterSearchbar/>
       <Box sx={{ width: '100%', padding: 3 }}> {/* Added padding for outer spacing */}
         <Grid container spacing={{ mobile: 2, tablet: 3, laptop: 4 }} justifyContent="center">
           {meals?.map((meal) => (

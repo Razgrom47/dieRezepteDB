@@ -1,29 +1,11 @@
+/* eslint-disable react/prop-types */
 import { Box, Typography, Button, Grid, Card, CardContent } from '@mui/material';
-const Home = () => {
+const Home = ({latestMeals, randomIngredients }) => {
   const user = {
     name: "John Doe",
     country: "USA",
     profilePicture: "https://via.placeholder.com/100", // Placeholder for avatar
   };
-
-  const latestMeals = [
-    "Spaghetti Carbonara",
-    "Chicken Alfredo",
-    "Sushi Rolls",
-    "Tacos",
-    "Chicken Alfredo",
-    "Sushi Rolls",
-  ];
-
-  const randomIngredients = [
-    "Garlic",
-    "Avocado",
-    "Chicken",
-    "Tomato",
-    "Avocado",
-    "Chicken",
-  ];
-
   return (
     <Box sx={{ padding: 3 }}>
       {/* Profile Section */}
@@ -48,17 +30,17 @@ const Home = () => {
         <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
           Latest Meals
         </Typography>
-        <Button variant="contained" color="primary" href="/browse-meals" sx={{ marginBottom: 3 }}>
+        <Button variant="contained" color="primary" sx={{ marginBottom: 3 }}>
           Browse All Meals
         </Button>
         <Grid container spacing={3}>
-          {latestMeals.map((meal, index) => (
+          {latestMeals?.map((meal, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card sx={{ boxShadow: 3, borderRadius: 2, transition: 'transform 0.3s', '&:hover': { transform: 'scale(1.05)' } }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="body1" sx={{ flexGrow: 1, fontSize: '16px' }}>
-                      {meal}
+                      {meal.strMeal}
                     </Typography>
                     <Button size="small" color="primary" href="/browse-meals">
                       View Meal
@@ -76,17 +58,17 @@ const Home = () => {
         <Typography variant="h6" sx={{ fontWeight: 'bold', marginBottom: 2 }}>
           Random Ingredients
         </Typography>
-        <Button variant="contained" color="primary" href="/browse-ingredients" sx={{ marginBottom: 3 }}>
+        <Button variant="contained" color="primary" href="/ingredients" sx={{ marginBottom: 3 }}>
           Browse All Ingredients
         </Button>
         <Grid container spacing={3}>
-          {randomIngredients.map((ingredient, index) => (
+          {randomIngredients?.map((ingredient, index) => (
             <Grid item xs={12} sm={6} md={4} key={index}>
               <Card sx={{ boxShadow: 3, borderRadius: 2, transition: 'transform 0.3s', '&:hover': { transform: 'scale(1.05)' } }}>
                 <CardContent>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <Typography variant="body1" sx={{ flexGrow: 1, fontSize: '16px' }}>
-                      {ingredient}
+                      {ingredient.strIngredient}
                     </Typography>
                     <Button size="small" color="primary" href="/browse-ingredients">
                       View Ingredient

@@ -1,10 +1,8 @@
-import json, sqlite3, os
+import json, sqlite3, os, uuid, random, jwt
 from flask import Flask, jsonify, request, make_response, session
-import jwt  #python 3.6 or later
 from datetime import timedelta, datetime
 from functools import wraps    
 from flask_cors import CORS
-import uuid
 my_secret = uuid.uuid4().hex
 print("MY SERVER SECRET: ", my_secret)
 
@@ -80,7 +78,7 @@ def login():
 
 # Getting all meals
 @app.route('/meals/', methods=["GET"])
-@token_required
+#@token_required
 def meals():
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -134,7 +132,7 @@ def mealByName(name):
         try:
             filtered = []
             for meal in all_meals:
-                if name.lower() in meal["strMeal"].lower():
+                if name.lower() in meal["strMeal"].lower() and meal not in filtered:
                     filtered.append(meal)
             return jsonify({"meals":{"filtered":filtered}})
         except:
@@ -181,7 +179,7 @@ def mealByIngredient(ingr):
                     meal["strIngredient20"],
                     ]:
                     
-                    if ingr.lower() in existingIngredient.lower():
+                    if ingr.lower() in existingIngredient.lower() and meal not in filtered:
                         filtered.append(meal)
             return jsonify({"meals":{"filtered":filtered}})
         except:
@@ -205,7 +203,7 @@ def mealByArea(area):
         try:
             filtered = []
             for meal in all_meals:
-                if area.lower() in meal["strArea"].lower():
+                if area.lower() in meal["strArea"].lower() and meal not in filtered:
                     filtered.append(meal)
             return jsonify({"meals":{"filtered":filtered}})
         except:
@@ -229,7 +227,7 @@ def mealByCategory(category):
         try:
             filtered = []
             for meal in all_meals:
-                if category.lower() in meal["strCategory"].lower():
+                if category.lower() in meal["strCategory"].lower() and meal not in filtered:
                     filtered.append(meal)
             return jsonify({"meals":{"filtered":filtered}})
         except:
@@ -253,8 +251,30 @@ def mealByTag(tag):
         try:
             filtered = []
             for meal in all_meals:
-                if tag.lower() in meal["strTags"].lower():
+                if tag.lower() in meal["strTags"].lower() and meal not in filtered:
                     filtered.append(meal)
+            return jsonify({"meals":{"filtered":filtered}})
+        except:
+            return jsonify({"meals":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
+@app.route('/meals/latests/<number>', methods=["GET"])
+def mealLatests(number):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                conn.row_factory = sqlite3.Row
+                all_meals=[dict(row) for row in conn.execute("SELECT * FROM MEALS").fetchall()]
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                return(f"ERROR: {err}")
+        try:
+            filtered = []
+            for meal in all_meals[-int(number):]:
+                filtered.append(meal)
             return jsonify({"meals":{"filtered":filtered}})
         except:
             return jsonify({"meals":"null"})
@@ -319,7 +339,7 @@ def ingredientsByName(ingr):
         try:
             filtered = []
             for ing in all_ingredients:
-                if ingr.lower() in ing["strIngredient"].lower(): 
+                if ingr.lower() in ing["strIngredient"].lower() and ing not in filtered: 
                     filtered.append(ing)
             return jsonify({"ingredients":{"filtered":filtered}})
         except:
@@ -343,8 +363,33 @@ def ingredientsByTags(ingr):
         try:
             filtered = []
             for ing in all_ingredients:
-                if ingr.lower() in ing["strType"].lower(): 
+                if ingr.lower() in ing["strType"].lower() and ing not in filtered: 
                     filtered.append(ing)
+            return jsonify({"ingredients":{"filtered":filtered}})
+        except:
+            return jsonify({"ingredients":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
+@app.route('/ingredients/random/<number>', methods=["GET"])
+def ingredientsRandom(number):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                conn.row_factory = sqlite3.Row
+                all_ingredients=[dict(row) for row in conn.execute("SELECT * FROM INGREDIENTS").fetchall()]
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                return(f"ERROR: {err}")
+        try:
+            filtered = []
+            while True:
+                if all_ingredients[random.randint(0,574)] not in filtered:
+                    filtered.append(all_ingredients[random.randint(0,574)])
+                if len(filtered) == int(number):
+                    break
             return jsonify({"ingredients":{"filtered":filtered}})
         except:
             return jsonify({"ingredients":"null"})
