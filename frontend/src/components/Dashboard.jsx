@@ -6,7 +6,6 @@ import Typography from '@mui/material/Typography';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { DashboardLayout, ThemeSwitcher } from '@toolpad/core/DashboardLayout';
-import { useDemoRouter } from '@toolpad/core/internal';
 import { useEffect, useState } from 'react';
 import MealsListe from './Mealsliste';
 import IngredientsListe from './IngredientListe';
@@ -26,6 +25,8 @@ import {
   Route,
   useLocation
 } from "react-router-dom";
+import Login from "./Login"
+import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
 
 // Define the colors for primary, secondary, and third colors
 // const primaryDark = '#98FF98'; // light Green for dark mode
@@ -41,14 +42,14 @@ import {
 const NAVIGATION = [
   { kind: 'header', title: 'Main items' },
   { kind: 'divider', title: 'Main items' },
-  { segment: "home", title: 'Home', icon: <CottageTwoToneIcon sx={{ color: "#98FF98" }} />, link: '/home' },
-  { segment: "profile", title: 'Profile', icon: <AccountCircleTwoToneIcon sx={{ color: "#98FF98" }} />, link: '/profile' },
-  { segment: "meals", title: 'Meals', icon: <DinnerDiningTwoToneIcon sx={{ color: "#98FF98" }} />, link: '/meals' },
-  { segment: "ingredients", title: 'Ingredients', icon: <ShoppingCartIcon sx={{ color: "#98FF98" }} />, link: '/ingredients' },
-  { segment: "meal/filter", title: 'MealFilter', icon: <TuneTwoToneIcon sx={{ color: "#98FF98" }} />, link: "/meal/filter"},
+  { segment: "home", title: 'Home', icon: <CottageTwoToneIcon sx={{ color: "#98FF98" }} />},
+  { segment: "profile", title: 'Profile', icon: <AccountCircleTwoToneIcon sx={{ color: "#98FF98" }} />},
+  { segment: "meals", title: 'Meals', icon: <DinnerDiningTwoToneIcon sx={{ color: "#98FF98" }} />},
+  { segment: "ingredients", title: 'Ingredients', icon: <ShoppingCartIcon sx={{ color: "#98FF98" }} />},
+  { segment: "meal/filter", title: 'MealFilter', icon: <TuneTwoToneIcon sx={{ color: "#98FF98" }} />},
+  { segment: "login", title: 'Login', icon: <LoginTwoToneIcon sx={{ color: "#98FF98" }} />},
 ];
 
-// eslint-disable-next-line react/prop-types
 function DemoPageContent() {
   const [meals, setMeals] = useState();
   const [ingredients, setIngredients] = useState();
@@ -208,6 +209,7 @@ function DashboardLayoutSlots() {
     return (
       <Router>
         <AppProvider navigation={NAVIGATION} theme={demoTheme}>
+          
           <DashboardLayout
             slots={{
               appTitle: CustomAppTitle,
@@ -215,6 +217,7 @@ function DashboardLayoutSlots() {
               sidebarFooter: SidebarFooter,
             }}>
             <Routes>
+              <Route path="/login" element={<Login/>} />
               <Route path="/home" element={<DemoPageContent />} />
               <Route path="/meals" element={<DemoPageContent />} />
               <Route path="/ingredients" element={<DemoPageContent />} />

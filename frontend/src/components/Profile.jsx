@@ -1,5 +1,5 @@
 import { Box, Typography, Avatar, Paper, Divider, Button, Grid, Card, CardContent } from '@mui/material';
-
+import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 const Profile = () => {
   const user = {
     name: "John Doe",
@@ -29,6 +29,7 @@ const Profile = () => {
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               <strong>Country:</strong> {user.country}
             </Typography>
+            <Button sx={{martinTop:"3.75rem"}}> <LogoutTwoToneIcon/> Log Out </Button>
           </Box>
         </Box>
 

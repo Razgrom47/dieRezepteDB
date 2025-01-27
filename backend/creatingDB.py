@@ -134,7 +134,7 @@ with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
         conn.execute(drop_table_users)
         conn.execute(create_table_users)
         conn.commit()
-        conn.execute(f"INSERT INTO USERS (strUser, strPassword) VALUES ('admin', 'admin');")
+        conn.execute(f"INSERT INTO USERS (strUser, strPassword) VALUES ('admin@email.com', 'admin');")
         #Favorite Meals
         conn.execute(drop_table_Fav_Meals)
         conn.execute(create_table_Fav_Meals)
