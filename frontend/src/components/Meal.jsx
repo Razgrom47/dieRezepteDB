@@ -62,11 +62,10 @@ export default function Meal({ meal }) {
             }}>
               <strong>Category:</strong> {meal?.strCategory} | <strong>Area:</strong> {meal?.strArea}
             </Typography>
-
             {/* Ingredients */}
             <Box sx={{ marginBottom: 3 }}>
               <Typography variant="h6" color="textPrimary" sx={{
-                fontWeight: 500, marginBottom: 1, color: 'primary.dark' 
+                fontWeight: 500, marginBottom: 1, color: '#98FF98' 
               }}>
                 Ingredients:
               </Typography>
@@ -82,7 +81,7 @@ export default function Meal({ meal }) {
                         />
                       </ListItemAvatar>
                       <ListItemText primary={capitalizeWords(ingredient)}  /> 
-                      <Button href={"http://localhost:7700/ingredients/name/"+capitalizeWords(ingredient)}> View Ingredient</Button> 
+                      <Button href={"/ingredient?ingredientQuery="+capitalizeWords(ingredient.replace(" ", "%20").replace("&", "%26"))} sx={{color: '#98FF98'}}> View Ingredient</Button> 
                     </ListItem>
                   )
                 ))}
@@ -92,7 +91,7 @@ export default function Meal({ meal }) {
             {/* Instructions */}
             <Box sx={{ marginBottom: 3 }}>
               <Typography variant="h6"  sx={{
-                fontWeight: 500, marginBottom: 1, color: 'primary.dark'
+                fontWeight: 500, marginBottom: 1, color: '#98FF98'
               }}>
                 Instructions:
               </Typography>
@@ -110,6 +109,7 @@ export default function Meal({ meal }) {
                 href={meal?.strYoutube}
                 target="_blank"
                 sx={{
+                  background: '#98FF98',
                   borderRadius: 25,
                   padding: '14px 40px',
                   fontWeight: 600,

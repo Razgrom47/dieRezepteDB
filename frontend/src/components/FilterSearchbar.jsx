@@ -3,7 +3,7 @@ import { Stack, TextField, IconButton, Tooltip } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 
 export default function FilterSearchbar() {
-  const [ingredientsSearchquery, setQuery] = useState(
+  const [ingredientsSearchquery, setIngredientsSearchquery] = useState(
     new URLSearchParams(window.location.search).get("ingredientSearchquery") || ""
   );
 
@@ -15,7 +15,7 @@ export default function FilterSearchbar() {
 
   const handleSearchChange = (e) => {
     const newQuery = e.target.value;
-    setQuery(newQuery);
+    setIngredientsSearchquery(newQuery);
   };
 
   const handleSearchSubmit = () => {

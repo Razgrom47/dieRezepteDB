@@ -5,6 +5,7 @@ import PublicTwoToneIcon from '@mui/icons-material/PublicTwoTone';
 import LoyaltyTwoToneIcon from '@mui/icons-material/LoyaltyTwoTone';
 import CategoryTwoToneIcon from '@mui/icons-material/CategoryTwoTone';
 import MenuBookTwoToneIcon from '@mui/icons-material/MenuBookTwoTone';
+import LocalFloristTwoToneIcon from '@mui/icons-material/LocalFloristTwoTone';
 
 export default function FilterSearchbar() {
   const [query, setQuery] = useState(
@@ -57,7 +58,7 @@ export default function FilterSearchbar() {
             <MenuItem value="Category"><CategoryTwoToneIcon sx={{ color: "#98FF98", ml: 1 }} /> Category</MenuItem>
             <MenuItem value="Area"><PublicTwoToneIcon sx={{ color: "#98FF98", ml: 1 }} /> Area</MenuItem>
             <MenuItem value="Tag"><LoyaltyTwoToneIcon sx={{ color: "#98FF98", ml: 1 }} /> Tag</MenuItem>
-            <MenuItem value="Ingredient"><MenuBookTwoToneIcon sx={{ color: "#98FF98", ml: 1 }} /> Ingredient</MenuItem>
+            <MenuItem value="Ingredient"><LocalFloristTwoToneIcon sx={{ color: "#98FF98", ml: 1 }} /> Ingredient</MenuItem>
             <MenuItem value="Name"><MenuBookTwoToneIcon sx={{ color: "#98FF98", ml: 1 }} /> Name</MenuItem>
           </Select>
         </FormControl>

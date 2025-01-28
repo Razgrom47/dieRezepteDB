@@ -3,9 +3,8 @@ import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 const Profile = () => {
   const user = {
     name: "John Doe",
-    password: "**********",
     country: "USA",
-    favoriteMeals: ["Spaghetti Carbonara", "Chicken Alfredo", "Sushi Rolls"],
+    favoriteMeals: ["Fish Soup (Ukha)", "Chicken Alfredo", "Sushi Rolls"],
     favoriteIngredients: ["Chicken", "Garlic", "Avocado"]
   };
 
@@ -24,12 +23,12 @@ const Profile = () => {
               {user.name}
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-              <strong>Password:</strong> {user.password}
+              <strong>Password:</strong> **********
             </Typography>
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               <strong>Country:</strong> {user.country}
             </Typography>
-            <Button sx={{martinTop:"3.75rem"}}> <LogoutTwoToneIcon/> Log Out </Button>
+            <Button sx={{martinTop:"3.75rem", color: '#98FF98'}}> <LogoutTwoToneIcon/> Log Out </Button>
           </Box>
         </Box>
 
@@ -39,7 +38,7 @@ const Profile = () => {
         <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold' }}>
           Favorite Meals
         </Typography>
-        <Button variant="contained" color="primary" href="/browse-ingredients" sx={{ marginBottom: 3 }}>
+        <Button variant="contained" color="primary" href="/ingredients" sx={{ background: '#98FF98', marginBottom: 3 }}>
           Browse All Favorite Meals
         </Button>
         <Grid container spacing={3}>
@@ -51,7 +50,7 @@ const Profile = () => {
                     <Typography variant="body1" sx={{ flexGrow: 1, fontSize: '16px' }}>
                       {meal}
                     </Typography>
-                    <Button size="small" color="primary" href="/browse-meals">
+                    <Button size="small" color="primary" href={"/meal?mealQuery="+meal.replace("&","%26")} sx={{ color: '#98FF98', hover:{color:'000'}}}>
                       View Meal
                     </Button>
                   </Box>
@@ -67,7 +66,7 @@ const Profile = () => {
         <Typography variant="h5" sx={{ marginBottom: 2, fontWeight: 'bold' }}>
           Favorite Ingredients
         </Typography>
-        <Button variant="contained" color="primary" href="/browse-ingredients" sx={{ marginBottom: 3 }}>
+        <Button variant="contained" color="primary" href="/ingredients" sx={{ background: '#98FF98', marginBottom: 3 }}>
           Browse All Favorite Ingredients
         </Button>
 
@@ -80,8 +79,8 @@ const Profile = () => {
                     <Typography variant="body1" sx={{ flexGrow: 1, fontSize: '16px' }}>
                       {ingredient}
                     </Typography>
-                    <Button size="small" color="primary" href="/browse-meals">
-                      View Meal
+                    <Button size="small" color="primary" href={"/ingredient?ingredientQuery="+ingredient} sx={{color: '#98FF98'}}>
+                      View Ingredient
                     </Button>
                   </Box>
                 </CardContent>

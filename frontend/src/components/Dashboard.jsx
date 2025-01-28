@@ -15,7 +15,6 @@ import DinnerDiningTwoToneIcon from '@mui/icons-material/DinnerDiningTwoTone';
 import VerifiedTwoToneIcon from '@mui/icons-material/VerifiedTwoTone';
 import CottageTwoToneIcon from '@mui/icons-material/CottageTwoTone';
 import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
-import TuneTwoToneIcon from '@mui/icons-material/TuneTwoTone';
 import Profile from './Profile';
 import Home from './Home';
 import Meal from './Meal';
@@ -27,6 +26,11 @@ import {
 } from "react-router-dom";
 import Login from "./Login"
 import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
+import Impressum from './Impressum';
+import Datenschutz from "./Datenschutz";
+import Ingredient from "./Ingredient";
+import GavelTwoToneIcon from '@mui/icons-material/GavelTwoTone';
+import LocalPoliceTwoToneIcon from '@mui/icons-material/LocalPoliceTwoTone';
 
 // Define the colors for primary, secondary, and third colors
 // const primaryDark = '#98FF98'; // light Green for dark mode
@@ -46,7 +50,8 @@ const NAVIGATION = [
   { segment: "profile", title: 'Profile', icon: <AccountCircleTwoToneIcon sx={{ color: "#98FF98" }} />},
   { segment: "meals", title: 'Meals', icon: <DinnerDiningTwoToneIcon sx={{ color: "#98FF98" }} />},
   { segment: "ingredients", title: 'Ingredients', icon: <ShoppingCartIcon sx={{ color: "#98FF98" }} />},
-  { segment: "meal/filter", title: 'MealFilter', icon: <TuneTwoToneIcon sx={{ color: "#98FF98" }} />},
+  { segment: "datenschutz", title: 'Datenschutz', icon: <LocalPoliceTwoToneIcon sx={{ color: "#98FF98" }} />},
+  { segment: "impressum", title: 'Impressum', icon: <GavelTwoToneIcon sx={{ color: "#98FF98" }} />},
   { segment: "login", title: 'Login', icon: <LoginTwoToneIcon sx={{ color: "#98FF98" }} />},
 ];
 
@@ -56,12 +61,16 @@ function DemoPageContent() {
   const [home_meals, setHomeMeals] = useState();
   const [home_ingredients, setHomeIngredients] = useState();
   const [meal, setMeal] = useState();
+  const [ingredient, setIngredient] = useState();
+  const [areas, setAreas] = useState();
   const { pathname, search } = useLocation();
   const searchParams = new URLSearchParams(search); 
   const query = searchParams.get("searchquery");
+  const mealQuery = searchParams.get("mealQuery");
+  const ingredientQuery = searchParams.get("ingredientQuery");
   const ingredientsSearchquery = searchParams.get("ingredientsSearchquery");
   const param = searchParams.get("param");
-  
+
   // Effect zum Abrufen der Mahlzeiten basierend auf den Parametern
   useEffect(() => {
     if (pathname === '/meals') {
@@ -113,6 +122,7 @@ function DemoPageContent() {
   // Effect für die Home-Seite mit den neuesten Zutaten und Mahlzeiten
   useEffect(() => {
     if (pathname === '/home') {
+      console.log("home%20&%20home".replace("&", "%26"))
       fetch('http://127.0.0.1:7700/ingredients/random/6')
         .then(response => response.json())
         .then(data => setHomeIngredients(data.ingredients.filtered))
@@ -122,33 +132,58 @@ function DemoPageContent() {
         .then(response => response.json())
         .then(data => setHomeMeals(data.meals.filtered))
         .catch(error => console.error('Error fetching meals:', error));
+      
+      fetch('http://127.0.0.1:7700/areas')
+        .then(response => response.json())
+        .then(data => setAreas(data.areas))
+        .catch(error => console.error('Error fetching meals:', error));
     }
   }, [pathname]);
 
   // Effekt zum Abrufen einer Mahlzeit bei Filteransicht
   useEffect(() => {
-    if (pathname === '/meal/filter') {
-      fetch('http://127.0.0.1:7700/meals/id/848484')
+    if (pathname === '/meal') {
+      console.log(mealQuery)
+      fetch('http://127.0.0.1:7700/meal/name/'+mealQuery)
         .then(response => response.json())
         .then(data => setMeal(data.meal))
         .catch(error => console.error('Error fetching meal:', error));
     }
-  }, [pathname]);
+  }, [pathname, mealQuery]);
+  
+  useEffect(() => {
+    if (pathname === '/ingredient') {
+      fetch('http://127.0.0.1:7700/ingredient/name/'+ingredientQuery)
+        .then(response => response.json())
+        .then(data =>{ setIngredient(data.ingredient); })
+        .catch(error => console.error('Error fetching meal:', error));
+    }
+  }, [pathname, ingredientQuery]);
+  
+  useEffect(() => {
+    if (ingredient) {
+      fetch('http://127.0.0.1:7700/meals/ingredient/'+ingredient?.strIngredient)
+        .then(response => response.json())
+        .then(data => {setMeals(data.meals.filtered); console.log(data.meals.filtered);})
+        .catch(error => console.error('Error fetching meals:', error));
+    }
+  }, [pathname, ingredient]);
 
   return (
     <Box sx={{ justifyItems: "center" }}>
 
       <Typography sx={{ fontSize: "2.125rem" }}>
         {pathname === '/meals' && "Meals"}
-        {pathname === '/meal/filter' && "Meal"}
+        {pathname === '/meal' && "Meal"}
         {pathname === '/ingredients' && "Ingredients"}
+        {pathname === '/ingredient' && "Ingredient"}
         {pathname === '/home' && "Home Page"}
         {pathname === '/ingredient/filter' && "Ingredient"}
         {pathname === '/profile' && "Profile"}
       </Typography>
       
       {/* Routing für Home-Seite */}
-      {pathname === '/home' && <Home latestMeals={home_meals} randomIngredients={home_ingredients} />}
+      {pathname === '/home' && <Home areas={areas} latestMeals={home_meals} randomIngredients={home_ingredients} />}
       
       {/* Routing für Meals-Liste mit optionalen Filtern */}
       {pathname === '/meals' && <MealsListe meals={meals} />}
@@ -157,17 +192,23 @@ function DemoPageContent() {
       {pathname === '/meals/ingredient' && <MealsListe meals={meals} />}
       {pathname === '/meals/name' && <MealsListe meals={meals} />}
       
-      {/* Routing für Meal-Details bei Filteransicht */}
-      {pathname === '/meal/filter' && <Meal meal={meal} />}
+      {/* Routing für Meal-Details */}
+      {pathname === '/meal' && <Meal meal={meal} />}
+      
+      {/* Routing für Ingredient-Details */}
+      {pathname === '/ingredient' && <Ingredient ingredient={ingredient} meals={meals} />}
       
       {/* Routing für Ingredients-Liste */}
       {pathname === '/ingredients' && <IngredientsListe ingredients={ingredients} />}
       
-      {/* Routing für Ingredient-Filter */}
-      {/*pathname === '/ingredient/filter' && <IngredientDetail />}
-      
       {/* Routing für Profile-Seite */}
       {pathname === '/profile' && <Profile />}
+      
+      {/* Routing für Profile-Seite */}
+      {pathname === '/datenschutz' && <Datenschutz />}
+
+      {/* Routing für Profile-Seite */}
+      {pathname === '/impressum' && <Impressum />}
     </Box>
   );
 }
@@ -176,7 +217,7 @@ function DemoPageContent() {
 
 function ToolbarActionsSearch() {
   return (
-      <ThemeSwitcher />
+      <ThemeSwitcher sx={{color:"#98FF98"}} />
   );
 }
 
@@ -220,9 +261,12 @@ function DashboardLayoutSlots() {
               <Route path="/login" element={<Login/>} />
               <Route path="/home" element={<DemoPageContent />} />
               <Route path="/meals" element={<DemoPageContent />} />
+              <Route path="/meal" element={<DemoPageContent />} />
+              <Route path="/ingredient" element={<DemoPageContent />} />
               <Route path="/ingredients" element={<DemoPageContent />} />
-              <Route path="/meal/filter" element={<DemoPageContent />} />
               <Route path="/profile" element={<DemoPageContent />} />
+              <Route path="/datenschutz" element={<DemoPageContent />} />
+              <Route path="/impressum" element={<DemoPageContent />} />
             </Routes>
           </DashboardLayout>
         </AppProvider>

@@ -14,7 +14,8 @@
  import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
  import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { Button } from '@mui/material';
- 
+
+
 const ExpandMore = styled((props) => {
    // eslint-disable-next-line no-unused-vars
    const { expand, ...other } = props;
@@ -40,9 +41,10 @@ const ExpandMore = styled((props) => {
    ],
  }));
  
+ 
+
  export default function MealRecipeReviewCard({meal}) {
    const [expanded, setExpanded] = React.useState(false);
- 
    const handleExpandClick = () => {
      setExpanded(!expanded);
    };
@@ -58,12 +60,14 @@ const ExpandMore = styled((props) => {
          subheader={meal.strCategory}
          title={meal.strMeal}
        />
-       <CardMedia
-         component="img"
-         height="fit-content"
-         image={meal.pathImageMeal}
-         alt={meal.strMeal}
-       />
+       <a href={'/meal?mealQuery='+meal.strMeal.replace(" ", "%20").replace("&", "%26")}>
+        <CardMedia
+          component="img"
+          height="fit-content"
+          image={meal.pathImageMeal}
+          alt={meal.strMeal}
+          />
+        </a>
        <CardContent>
          <Typography variant="body2">
          <Button

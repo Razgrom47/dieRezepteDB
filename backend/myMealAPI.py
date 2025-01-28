@@ -140,6 +140,28 @@ def mealByName(name):
     except:
         return jsonify({"error":"data not found"})
 
+# Filter meals by Name
+@app.route('/meal/name/<name>', methods=["GET"])
+def mealByOneName(name):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                conn.row_factory = sqlite3.Row
+                all_meals=[dict(row) for row in conn.execute("SELECT * FROM MEALS").fetchall()]
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                return(f"ERROR: {err}")
+        try:
+            for meal in all_meals:
+                if name.replace("%26", "&").lower() == meal["strMeal"].lower():
+                    return jsonify({"meal":meal})
+        except:
+            return jsonify({"meals":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
 # Filter meals by Ingredient
 @app.route('/meals/ingredient/<ingr>', methods=["GET"])
 def mealByIngredient(ingr):
@@ -280,7 +302,30 @@ def mealLatests(number):
             return jsonify({"meals":"null"})
     except:
         return jsonify({"error":"data not found"})
-    
+
+@app.route('/areas', methods=["GET"])
+def areas():
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                conn.row_factory = sqlite3.Row
+                all_meals=[dict(row) for row in conn.execute("SELECT * FROM MEALS").fetchall()]
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                return(f"ERROR: {err}")
+        try:
+            filtered = []
+            for meal in all_meals:
+                if meal["strArea"] not in filtered:
+                    filtered.append(meal["strArea"])
+            return jsonify({"areas":filtered})
+        except:
+            return jsonify({"areas":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
 # Get all Ingredients
 @app.route('/ingredients/', methods=["GET"])
 def ingredients():
@@ -318,6 +363,29 @@ def ingredientsById(ingr):
             for ing in all_ingredients:
                 if int(ingr) == int(ing["idIngredient"]): 
                     return jsonify({"ingredients":ing})
+        except:
+            return jsonify({"ingredients":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
+# Filter Ingredients by id
+@app.route('/ingredient/name/<name>', methods=["GET"])
+def ingredientByName(name):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                conn.row_factory = sqlite3.Row
+                all_ingredients=[dict(row) for row in conn.execute("SELECT * FROM INGREDIENTS").fetchall()]
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                return(f"ERROR: {err}")
+        try:
+            for ing in all_ingredients:
+                if name.lower() == ing["strIngredient"].lower(): 
+                    return jsonify({"ingredient":ing})
+            return jsonify({"ingredients":"null"})
         except:
             return jsonify({"ingredients":"null"})
     except:

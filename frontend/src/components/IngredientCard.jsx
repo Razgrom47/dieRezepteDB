@@ -56,12 +56,14 @@ export default function MealRecipeReviewCard({ ingredient }) {
         }
         title={ingredient.strIngredient}
       />
+      <a href={"/ingredient?ingredientQuery="+ingredient.strIngredient.replace(" ", "%20").replace("&", "%26")}>
       <CardMedia
         component="img"
         height="fit-content"
         image={ingredient.pathImageIngredient}
         alt={ingredient.strIngredient}
-      />
+        />
+      </a>
       <CardContent>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
         {ingredient.strType != "None" && ingredient.strType}
