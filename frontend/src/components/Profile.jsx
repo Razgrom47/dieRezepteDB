@@ -1,5 +1,12 @@
 import { Box, Typography, Avatar, Paper, Divider, Button, Grid, Card, CardContent } from '@mui/material';
 import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
+// ✅ handleLogout muss außerhalb der Profile-Komponente sein
+const handleLogout = () => {
+  document.cookie = "authToken="; 
+  console.log("✅ Token gelöscht. Weiterleitung zu Login...");
+  window.location.href = "/login"; // ⬅️ Nutzer nach dem Logout umleiten
+};
+
 const Profile = () => {
   const user = {
     name: "John Doe",
@@ -7,6 +14,7 @@ const Profile = () => {
     favoriteMeals: ["Fish Soup (Ukha)", "Chicken Alfredo", "Sushi Rolls"],
     favoriteIngredients: ["Chicken", "Garlic", "Avocado"]
   };
+
 
   return (
     <Box sx={{ margin: '0 auto', padding: 3 }}>
@@ -28,7 +36,7 @@ const Profile = () => {
             <Typography variant="body2" sx={{ color: 'text.secondary' }}>
               <strong>Country:</strong> {user.country}
             </Typography>
-            <Button sx={{martinTop:"3.75rem", color: '#98FF98'}}> <LogoutTwoToneIcon/> Log Out </Button>
+            <Button onClick={handleLogout}  sx={{martinTop:"3.75rem", color: '#98FF98'}}> <LogoutTwoToneIcon/> Log Out </Button>
           </Box>
         </Box>
 

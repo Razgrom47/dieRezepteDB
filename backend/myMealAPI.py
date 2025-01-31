@@ -66,6 +66,8 @@ def login():
             return(f"ERROR: {err}")
     if currentUser:
         session['logged_in'] = True
+        session['userID'] = currentUser["idUser"]
+        session['username'] = currentUser["strUser"]
         token = jwt.encode(
             {
                 "user":currentUser["strUser"],
@@ -78,7 +80,7 @@ def login():
 
 # Getting all meals
 @app.route('/meals/', methods=["GET"])
-#@token_required
+@token_required
 def meals():
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -118,6 +120,7 @@ def mealById(id):
 
 # Filter meals by Name
 @app.route('/meals/name/<name>', methods=["GET"])
+@token_required
 def mealByName(name):
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -164,6 +167,7 @@ def mealByOneName(name):
 
 # Filter meals by Ingredient
 @app.route('/meals/ingredient/<ingr>', methods=["GET"])
+@token_required
 def mealByIngredient(ingr):
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -211,6 +215,7 @@ def mealByIngredient(ingr):
 
 # Filter meals by Area
 @app.route('/meals/area/<area>', methods=["GET"])
+@token_required
 def mealByArea(area):
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -235,6 +240,7 @@ def mealByArea(area):
 
 # Filter meals by Category
 @app.route('/meals/category/<category>', methods=["GET"])
+@token_required
 def mealByCategory(category):
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -259,6 +265,7 @@ def mealByCategory(category):
 
 # Filter meals by Tag
 @app.route('/meals/tag/<tag>', methods=["GET"])
+@token_required
 def mealByTag(tag):
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -328,6 +335,7 @@ def areas():
 
 # Get all Ingredients
 @app.route('/ingredients/', methods=["GET"])
+@token_required
 def ingredients():
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -393,6 +401,7 @@ def ingredientByName(name):
     
 # Filter Ingredients by name
 @app.route('/ingredients/name/<ingr>', methods=["GET"])
+@token_required
 def ingredientsByName(ingr):
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -417,6 +426,7 @@ def ingredientsByName(ingr):
 
 # Filter Ingredients by Tags
 @app.route('/ingredients/tag/<ingr>', methods=["GET"])
+@token_required
 def ingredientsByTags(ingr):
     try:
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
@@ -461,6 +471,36 @@ def ingredientsRandom(number):
             return jsonify({"ingredients":{"filtered":filtered}})
         except:
             return jsonify({"ingredients":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
+@app.route("/profile")
+@token_required
+def getUser():
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                conn.row_factory = sqlite3.Row
+                existingUser=[dict(row) for row in conn.execute("SELECT * FROM USERS WHERE idUser="+session["userID"]+" AND WHERE strUser='"+session["username"]+"';").fetchall()]
+                existingUserFavoriteMeals=[dict(row) for row in conn.execute("SELECT * FROM FAV_MEALS WHERE idUser="+session["userID"]+";").fetchall()]
+                existingUserFavoriteIngredients=[dict(row) for row in conn.execute("SELECT * FROM FAV_INGREDIENTS WHERE idUser="+session["userID"]+";").fetchall()]
+            
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                return(f"ERROR: {err}")
+        try:
+            
+            
+            return jsonify({"profile":
+                                {"credentials":
+                                    {"username":existingUser["strUser"],
+                                    "country":"STANDARD..."}}, 
+                                "fav_meals":existingUserFavoriteMeals, 
+                                "fav_ingredients":existingUserFavoriteIngredients})
+        except:
+            return jsonify({"user":"null"})
     except:
         return jsonify({"error":"data not found"})
     

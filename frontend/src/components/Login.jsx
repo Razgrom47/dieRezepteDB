@@ -15,50 +15,36 @@ const signIn = async (provider, formData, navigate) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ 'username':email, 'password':password }),
+      body: JSON.stringify({ 'username': email, 'password': password }),
     });
-    console.log(response)
 
     if (!response.ok) {
       const error = await response.json();
       alert(`Login failed: ${error.message}`);
-      return {
-        type: 'CredentialsSignin',
-        error: error.message || 'Invalid credentials.',
-      };
+      return { type: 'CredentialsSignin', error: error.message || 'Invalid credentials.' };
     }
 
     const data = await response.json();
     const token = data.token;
-    console.log(token)
-    localStorage.setItem('authToken', token);
-    alert(`Login successful! Token: ${token}`);
-    return {
-      type: 'CredentialsSignin',
-      error: null, // No error indicates success.
-      token, // Include token in the response.
-    };
+
+    // **Token als Cookie setzen**
+    document.cookie = `authToken=${token};`;
+    alert(`Login successful! Token stored in cookies.`);
+    // navigate("/home"); // Nach erfolgreichem Login weiterleiten
+    return { type: 'CredentialsSignin', error: null, token };
   } catch (error) {
     console.error('Login error:', error);
     alert('An unexpected error occurred. Please try again.');
-    navigate("/home");
-    return {
-      type: 'CredentialsSignin',
-      error: error.message || 'Unexpected error occurred.',
-    };
+    return { type: 'CredentialsSignin', error: error.message || 'Unexpected error occurred.' };
   }
 };
+
 export default function CredentialsSignInPage() {
   const theme = useTheme();
-  const navigate = useNavigate(); // Verwende useNavigate
+  const navigate = useNavigate();
   return (
-    // preview-start
     <AppProvider theme={theme}>
-      <SignInPage
-        signIn={(provider, formData) => signIn(provider, formData, navigate)} // Übergebe navigate an die SignIn-Funktion
-        providers={providers}
-      />
+      <SignInPage signIn={(provider, formData) => signIn(provider, formData, navigate)} providers={providers} />
     </AppProvider>
-    // preview-end
   );
 }

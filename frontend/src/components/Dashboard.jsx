@@ -55,6 +55,7 @@ const NAVIGATION = [
   { segment: "login", title: 'Login', icon: <LoginTwoToneIcon sx={{ color: "#98FF98" }} />},
 ];
 
+
 function DemoPageContent() {
   const [meals, setMeals] = useState();
   const [ingredients, setIngredients] = useState();
@@ -71,9 +72,17 @@ function DemoPageContent() {
   const ingredientsSearchquery = searchParams.get("ingredientsSearchquery");
   const param = searchParams.get("param");
 
+  
+  const getCookie = (name) => {
+    const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+    return match ? match[2] : null;
+  };
   // Effect zum Abrufen der Mahlzeiten basierend auf den Parametern
   useEffect(() => {
+    
     if (pathname === '/meals') {
+      const token = getCookie('authToken'); // Token aus Cookie holen
+    
       let url = 'http://127.0.0.1:7700/meals/';
       
       if (query?.length > 0) {
@@ -98,7 +107,14 @@ function DemoPageContent() {
         }
       }
 
-      fetch(url)
+      fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+          },
+        }
+      )
         .then(response => response.json())
         .then(data => setMeals(data.meals.filtered || data.meals))
         .catch(error => console.error('Error fetching meals:', error));
@@ -108,11 +124,19 @@ function DemoPageContent() {
   // Effect zum Abrufen der Zutaten
   useEffect(() => {
     if (pathname === '/ingredients') {
+      const token = getCookie('authToken'); // Token aus Cookie holen
+    
       const ingredientsUrl = ingredientsSearchquery?.length > 0
         ? `http://127.0.0.1:7700/ingredients/name/${ingredientsSearchquery}`
         : 'http://127.0.0.1:7700/ingredients/';
 
-      fetch(ingredientsUrl)
+      fetch(ingredientsUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
         .then(response => response.json())
         .then(data => setIngredients(data.ingredients.filtered || data.ingredients))
         .catch(error => console.error('Error fetching ingredients:', error));
@@ -122,7 +146,6 @@ function DemoPageContent() {
   // Effect für die Home-Seite mit den neuesten Zutaten und Mahlzeiten
   useEffect(() => {
     if (pathname === '/home') {
-      console.log("home%20&%20home".replace("&", "%26"))
       fetch('http://127.0.0.1:7700/ingredients/random/6')
         .then(response => response.json())
         .then(data => setHomeIngredients(data.ingredients.filtered))
