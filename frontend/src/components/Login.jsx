@@ -1,16 +1,15 @@
 import { AppProvider } from '@toolpad/core/AppProvider';
 import { SignInPage } from '@toolpad/core/SignInPage';
 import { useTheme } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom'; // Importiere useNavigate
 
 const providers = [{ id: 'credentials', name: 'Email and password' }];
 
-const signIn = async (provider, formData, navigate) => {
+const signIn = async (provider, formData) => {
   const email = formData?.get('email');
   const password = formData?.get('password');
 
   try {
-    const response = await fetch('http://localhost:7700/login', {
+    const response = await fetch('http://192.168.178.86:7700/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -18,8 +17,10 @@ const signIn = async (provider, formData, navigate) => {
       body: JSON.stringify({ 'username': email, 'password': password }),
     });
 
-    if (!response.ok) {
-      const error = await response.json();
+    console.log(response)
+
+    if (response.ok == false) {
+      const error = await response.text();
       alert(`Login failed: ${error.message}`);
       return { type: 'CredentialsSignin', error: error.message || 'Invalid credentials.' };
     }
@@ -41,10 +42,9 @@ const signIn = async (provider, formData, navigate) => {
 
 export default function CredentialsSignInPage() {
   const theme = useTheme();
-  const navigate = useNavigate();
   return (
     <AppProvider theme={theme}>
-      <SignInPage signIn={(provider, formData) => signIn(provider, formData, navigate)} providers={providers} />
+      <SignInPage signIn={(provider, formData) => signIn(provider, formData)} providers={providers} />
     </AppProvider>
   );
 }

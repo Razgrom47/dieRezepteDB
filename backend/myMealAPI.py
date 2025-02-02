@@ -9,7 +9,7 @@ print("MY SERVER SECRET: ", my_secret)
 app = Flask(__name__)
 app.config["SECRET_KEY"] = my_secret
 
-CORS(app, origins=["*"])
+CORS(app, origins=["*"], supports_credentials=True)
 
 cwd = (os.path.abspath(os.getcwd()))
 cwd = cwd + r"\backend" 
@@ -52,7 +52,6 @@ def login():
             print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
             conn.row_factory = sqlite3.Row
             all_users=[dict(row) for row in conn.cursor().execute("SELECT * FROM USERS").fetchall()]
-            print(all_users)
             print(json.loads(request.data))
             for existingUser in all_users:
                 if existingUser["strUser"] == json.loads(request.data)["username"] and existingUser["strPassword"] == json.loads(request.data)["password"]:
@@ -65,9 +64,9 @@ def login():
         except Exception as err:
             return(f"ERROR: {err}")
     if currentUser:
-        session['logged_in'] = True
-        session['userID'] = currentUser["idUser"]
-        session['username'] = currentUser["strUser"]
+        session["logged_in"] = True
+        session["userID"] = currentUser["idUser"]
+        session["username"] = currentUser["strUser"]
         token = jwt.encode(
             {
                 "user":currentUser["strUser"],
@@ -481,26 +480,183 @@ def getUser():
         with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
             try:
                 print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
                 conn.row_factory = sqlite3.Row
-                existingUser=[dict(row) for row in conn.execute("SELECT * FROM USERS WHERE idUser="+session["userID"]+" AND WHERE strUser='"+session["username"]+"';").fetchall()]
-                existingUserFavoriteMeals=[dict(row) for row in conn.execute("SELECT * FROM FAV_MEALS WHERE idUser="+session["userID"]+";").fetchall()]
-                existingUserFavoriteIngredients=[dict(row) for row in conn.execute("SELECT * FROM FAV_INGREDIENTS WHERE idUser="+session["userID"]+";").fetchall()]
-            
+                existingUser=[dict(row) for row in conn.execute("SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]          
             except sqlite3.OperationalError as e:
                 return("Failed to open database:", e)
             except Exception as err:
                 return(f"ERROR: {err}")
         try:
-            
-            
-            return jsonify({"profile":
-                                {"credentials":
-                                    {"username":existingUser["strUser"],
-                                    "country":"STANDARD..."}}, 
-                                "fav_meals":existingUserFavoriteMeals, 
-                                "fav_ingredients":existingUserFavoriteIngredients})
+            return jsonify({"profile":{"username":existingUser["strUser"], "country":"STANDARD..."},})
         except:
             return jsonify({"user":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+    
+@app.route("/profile/like/meal/<idMeal>", methods=["POST"])
+@token_required
+def getUserLikeMeal(idMeal):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                #print(token["user"])
+                conn.row_factory = sqlite3.Row
+                userId=[dict(row)["idUser"] for row in conn.execute(f"SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]
+                conn.execute(f"INSERT INTO FAV_MEALS (idUser, idMeal) VALUES ({int(userId)}, {int(idMeal)});")
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                print(err)
+                return(jsonify({f"ERROR: {err}"}))
+            try:
+                return jsonify({"message":"liked successfully"})
+            except:
+                return jsonify({"user":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
+@app.route("/profile/like/ingredient/<idIngredient>", methods=["POST"])
+@token_required
+def getUserLikeIngredient(idIngredient):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                #print(token["user"])
+                conn.row_factory = sqlite3.Row
+                userId=[dict(row)["idUser"] for row in conn.execute(f"SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]
+                conn.execute(f"INSERT INTO FAV_INGREDIENTS (idUser, idIngredient) VALUES ({int(userId)}, {int(idIngredient)});")
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                print(err)
+                return(jsonify({f"ERROR: {err}"}))
+            try:
+                return jsonify({"message":"liked successfully"})
+            except:
+                return jsonify({"user":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
+@app.route("/profile/get/meals", methods=["GET"])
+@token_required
+def getUserGetMeals():
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                #print(token["user"])
+                conn.row_factory = sqlite3.Row
+                userId=[dict(row)["idUser"] for row in conn.execute(f"SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]
+                users_meals = [dict(row)["idMeal"] for row in conn.execute(f"SELECT * FROM FAV_MEALS WHERE idUser={int(userId)};").fetchall()]
+                all_meals = [dict(row) for row in conn.execute("SELECT * FROM MEALS;").fetchall()]
+                filtered = []
+                for meal in all_meals:
+                    if meal["idMeal"] in users_meals:
+                        filtered.append(meal)
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                print(err)
+                return(jsonify({f"ERROR: {err}"}))
+            try:
+                return jsonify({"meals":{"filtered":filtered}})
+            except:
+                return jsonify({"meals":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
+@app.route("/profile/get/meals/last/<nr>", methods=["GET"])
+@token_required
+def getUserGetMealsLast(nr):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                #print(token["user"])
+                conn.row_factory = sqlite3.Row
+                userId=[dict(row)["idUser"] for row in conn.execute(f"SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]
+                users_meals = [dict(row)["idMeal"] for row in conn.execute(f"SELECT * FROM FAV_MEALS WHERE idUser={int(userId)};").fetchall()]
+                all_meals = [dict(row) for row in conn.execute("SELECT * FROM MEALS;").fetchall()]
+                filtered = []
+                for meal in all_meals:
+                    if meal["idMeal"] in users_meals:
+                        filtered.append(meal)
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                print(err)
+                return(jsonify({f"ERROR: {err}"}))
+            try:
+                filtered = filtered[-int(nr):]
+                return jsonify({"meals":{"filtered":filtered}})
+            except:
+                return jsonify({"meals":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+    
+@app.route("/profile/get/ingredients", methods=["GET"])
+@token_required
+def getUserGetIngredients():
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                #print(token["user"])
+                conn.row_factory = sqlite3.Row
+                userId=[dict(row)["idUser"] for row in conn.execute(f"SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]
+                users_ingredients = [dict(row)["idIngredient"] for row in conn.execute(f"SELECT * FROM FAV_INGREDIENTS WHERE idUser={int(userId)};").fetchall()]
+                all_ingredients = [dict(row) for row in conn.execute("SELECT * FROM INGREDIENTS;").fetchall()]
+                filtered = []
+                for ingredient in all_ingredients:
+                    if ingredient["idIngredient"] in users_ingredients:
+                        filtered.append(ingredient)
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                print(err)
+                return(jsonify({f"ERROR: {err}"}))
+            try:
+                return jsonify({"ingredients":{"filtered":filtered}})
+            except:
+                return jsonify({"ingredients":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+
+@app.route("/profile/get/ingredients/last/<nr>", methods=["GET"])
+@token_required
+def getUserGetIngredientsLast(nr):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                #print(token["user"])
+                conn.row_factory = sqlite3.Row
+                userId=[dict(row)["idUser"] for row in conn.execute(f"SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]
+                users_ingredients = [dict(row)["idIngredient"] for row in conn.execute(f"SELECT * FROM FAV_INGREDIENTS WHERE idUser={int(userId)};").fetchall()]
+                all_ingredients = [dict(row) for row in conn.execute("SELECT * FROM INGREDIENTS;").fetchall()]
+                filtered = []
+                for ingredient in all_ingredients:
+                    if ingredient["idIngredient"] in users_ingredients:
+                        filtered.append(ingredient)
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                print(err)
+                return(jsonify({f"ERROR: {err}"}))
+            try:
+                filtered = filtered[-int(nr):]
+                return jsonify({"ingredients":{"filtered":filtered}})
+            except:
+                return jsonify({"ingredients":"null"})
     except:
         return jsonify({"error":"data not found"})
     

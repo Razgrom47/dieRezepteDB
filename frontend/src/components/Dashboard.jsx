@@ -64,6 +64,9 @@ function DemoPageContent() {
   const [meal, setMeal] = useState();
   const [ingredient, setIngredient] = useState();
   const [areas, setAreas] = useState();
+  const [profile, setProfile] = useState();
+  const [profileMeals, setProfileMeals] = useState();
+  const [profileIngredients, setProfileIngredients] = useState();
   const { pathname, search } = useLocation();
   const searchParams = new URLSearchParams(search); 
   const query = searchParams.get("searchquery");
@@ -83,24 +86,24 @@ function DemoPageContent() {
     if (pathname === '/meals') {
       const token = getCookie('authToken'); // Token aus Cookie holen
     
-      let url = 'http://127.0.0.1:7700/meals/';
+      let url = 'http://192.168.178.86:7700/meals/';
       
       if (query?.length > 0) {
         switch (param) {
           case 'Area':
-            url = `http://127.0.0.1:7700/meals/area/${query}`;
+            url = `http://192.168.178.86:7700/meals/area/${query}`;
             break;
           case 'Category':
-            url = `http://127.0.0.1:7700/meals/category/${query}`;
+            url = `http://192.168.178.86:7700/meals/category/${query}`;
             break;
           case 'Ingredient':
-            url = `http://127.0.0.1:7700/meals/ingredient/${query}`;
+            url = `http://192.168.178.86:7700/meals/ingredient/${query}`;
             break;
           case 'Tag':
-            url = `http://127.0.0.1:7700/meals/tag/${query}`;
+            url = `http://192.168.178.86:7700/meals/tag/${query}`;
             break;
           case 'Name':
-            url = `http://127.0.0.1:7700/meals/name/${query}`;
+            url = `http://192.168.178.86:7700/meals/name/${query}`;
             break;
           default:
             break;
@@ -127,8 +130,8 @@ function DemoPageContent() {
       const token = getCookie('authToken'); // Token aus Cookie holen
     
       const ingredientsUrl = ingredientsSearchquery?.length > 0
-        ? `http://127.0.0.1:7700/ingredients/name/${ingredientsSearchquery}`
-        : 'http://127.0.0.1:7700/ingredients/';
+        ? `http://192.168.178.86:7700/ingredients/name/${ingredientsSearchquery}`
+        : 'http://192.168.178.86:7700/ingredients/';
 
       fetch(ingredientsUrl, {
         method: 'GET',
@@ -146,28 +149,115 @@ function DemoPageContent() {
   // Effect für die Home-Seite mit den neuesten Zutaten und Mahlzeiten
   useEffect(() => {
     if (pathname === '/home') {
-      fetch('http://127.0.0.1:7700/ingredients/random/6')
+      const token = getCookie('authToken'); // Token aus Cookie holen
+      fetch('http://192.168.178.86:7700/ingredients/random/6', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
         .then(response => response.json())
         .then(data => setHomeIngredients(data.ingredients.filtered))
         .catch(error => console.error('Error fetching ingredients:', error));
 
-      fetch('http://127.0.0.1:7700/meals/latests/6')
+      fetch('http://192.168.178.86:7700/meals/latests/6', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
         .then(response => response.json())
         .then(data => setHomeMeals(data.meals.filtered))
         .catch(error => console.error('Error fetching meals:', error));
       
-      fetch('http://127.0.0.1:7700/areas')
+      fetch('http://192.168.178.86:7700/areas', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
         .then(response => response.json())
         .then(data => setAreas(data.areas))
         .catch(error => console.error('Error fetching meals:', error));
+    }
+  }, [pathname]);
+  
+  useEffect(() => {
+    if (pathname === '/profile') {
+      const token = getCookie('authToken'); // Token aus Cookie holen
+      fetch('http://192.168.178.86:7700/profile/get/meals/last/3', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
+        .then(response => response.json())
+        .then(data => {setProfileMeals(data.meals.filtered); console.log(data)})
+        .catch(error => console.error('Error fetching meals:', error));
+
+      fetch('http://192.168.178.86:7700/profile/get/ingredients/last/3', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
+        .then(response => response.json())
+        .then(data => {setProfileIngredients(data.ingredients.filtered); console.log(data)})
+        .catch(error => console.error('Error fetching meals:', error));
+      
+      fetch('http://192.168.178.86:7700/profile', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
+        .then(response => response.json())
+        .then(data => {setProfile(data.profile); console.log(data);})
+        .catch(error => console.error('Error fetching meals:', error));
+    }
+  }, [pathname]);
+  useEffect(() => {
+    if (pathname === '/profile/meals') {
+      const token = getCookie('authToken'); // Token aus Cookie holen
+      fetch('http://192.168.178.86:7700/profile/get/meals', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
+        .then(response => response.json())
+        .then(data => {setProfileMeals(data.meals.filtered); console.log(data)})
+        .catch(error => console.error('Error fetching meals:', error));
+    }
+  }, [pathname]);
+  
+  useEffect(() => {
+    if (pathname === '/profile/ingredients') {
+      const token = getCookie('authToken'); // Token aus Cookie holen
+      fetch('http://192.168.178.86:7700/profile/get/ingredients', {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
+        .then(response => response.json())
+        .then(data => {setProfileIngredients(data.ingredients.filtered); console.log(data)})
+        .catch(error => console.error('Error fetching ingredients:', error));
     }
   }, [pathname]);
 
   // Effekt zum Abrufen einer Mahlzeit bei Filteransicht
   useEffect(() => {
     if (pathname === '/meal') {
-      console.log(mealQuery)
-      fetch('http://127.0.0.1:7700/meal/name/'+mealQuery)
+      fetch('http://192.168.178.86:7700/meal/name/'+mealQuery)
         .then(response => response.json())
         .then(data => setMeal(data.meal))
         .catch(error => console.error('Error fetching meal:', error));
@@ -176,7 +266,7 @@ function DemoPageContent() {
   
   useEffect(() => {
     if (pathname === '/ingredient') {
-      fetch('http://127.0.0.1:7700/ingredient/name/'+ingredientQuery)
+      fetch('http://192.168.178.86:7700/ingredient/name/'+ingredientQuery)
         .then(response => response.json())
         .then(data =>{ setIngredient(data.ingredient); })
         .catch(error => console.error('Error fetching meal:', error));
@@ -185,7 +275,15 @@ function DemoPageContent() {
   
   useEffect(() => {
     if (ingredient) {
-      fetch('http://127.0.0.1:7700/meals/ingredient/'+ingredient?.strIngredient)
+      const token = getCookie('authToken'); // Token aus Cookie holen
+    
+      fetch('http://192.168.178.86:7700/meals/ingredient/'+ingredient?.strIngredient, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+        },
+      })
         .then(response => response.json())
         .then(data => {setMeals(data.meals.filtered); console.log(data.meals.filtered);})
         .catch(error => console.error('Error fetching meals:', error));
@@ -225,7 +323,9 @@ function DemoPageContent() {
       {pathname === '/ingredients' && <IngredientsListe ingredients={ingredients} />}
       
       {/* Routing für Profile-Seite */}
-      {pathname === '/profile' && <Profile />}
+      {pathname === '/profile' && <Profile profile={profile} profileMeals={profileMeals} profileIngredients={profileIngredients} />}
+      {pathname === '/profile/meals' && <MealsListe meals={profileMeals}/>}
+      {pathname === '/profile/ingredients' && <IngredientsListe ingredients={profileIngredients} />}
       
       {/* Routing für Profile-Seite */}
       {pathname === '/datenschutz' && <Datenschutz />}
@@ -288,6 +388,8 @@ function DashboardLayoutSlots() {
               <Route path="/ingredient" element={<DemoPageContent />} />
               <Route path="/ingredients" element={<DemoPageContent />} />
               <Route path="/profile" element={<DemoPageContent />} />
+              <Route path="/profile/meals" element={<DemoPageContent />} />
+              <Route path="/profile/ingredients" element={<DemoPageContent />} />
               <Route path="/datenschutz" element={<DemoPageContent />} />
               <Route path="/impressum" element={<DemoPageContent />} />
             </Routes>

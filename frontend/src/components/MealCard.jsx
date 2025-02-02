@@ -41,7 +41,39 @@ const ExpandMore = styled((props) => {
    ],
  }));
  
- 
+ const getCookie = (name) => {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? match[2] : null;
+};
+
+const like_meal = async (idMeal) => {
+  try {
+    console.log(idMeal)
+    const token = getCookie('authToken'); // Token aus Cookie holen
+    const response = await fetch('http://192.168.178.86:7700/profile/like/meal/'+idMeal, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+      },
+    })
+      .then(response => response.json())
+      .catch(error => console.error('Error fetching meals:', error));
+
+    if (response.ok == false) {
+      const error = await response.text();
+      alert(`Login failed: ${error.message}`);
+      return { type: 'CredentialsSignin', error: error.message || 'Invalid credentials.' };
+    }
+    alert(`Saved successful! This meal is stored in your gallery.`);
+   
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('An unexpected error occurred. Please try again.');
+    return { type: 'CredentialsSignin', error: error.message || 'Unexpected error occurred.' };
+  }
+ }
+
 
  export default function MealRecipeReviewCard({meal}) {
    const [expanded, setExpanded] = React.useState(false);
@@ -49,6 +81,7 @@ const ExpandMore = styled((props) => {
      setExpanded(!expanded);
    };
  
+   
    return (
      <Card sx={{ width: "22rem",  minHeight:"69vh" }}>
        <CardHeader
@@ -90,7 +123,7 @@ const ExpandMore = styled((props) => {
          </Typography>
        </CardContent>
        <CardActions disableSpacing>
-         <IconButton aria-label="add to favorites">
+         <IconButton onClick={()=>{like_meal(meal.idMeal)}}   aria-label="add to favorites">
            <FavoriteIcon />
          </IconButton>
          <IconButton aria-label="share">

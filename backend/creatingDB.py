@@ -89,8 +89,9 @@ FOREIGN KEY (strIngredient20) REFERENCES INGREDIENTS(strIngredient)
 drop_table_users = """DROP TABLE IF EXISTS USERS;"""
 create_table_users = """CREATE TABLE USERS(
 idUser INTEGER PRIMARY KEY,
-strUser VARCHAR(255) NOT NULL,
-strPassword TEXT NOT NULL
+strUser VARCHAR(255) NOT NULL UNIQUE,
+strPassword TEXT NOT NULL,
+strCountry VARCHAR(255) NOT NULL
 );"""
 
 drop_table_Fav_Meals = """DROP TABLE IF EXISTS FAV_MEALS;"""
@@ -134,16 +135,16 @@ with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
         conn.execute(drop_table_users)
         conn.execute(create_table_users)
         conn.commit()
-        conn.execute(f"INSERT INTO USERS (strUser, strPassword) VALUES ('admin@email.com', 'admin');")
+        conn.execute(f"INSERT INTO USERS (idUser, strUser, strPassword, strCountry) VALUES (3733981, 'admin@email.com', 'admin', 'Bulgaria');")
         #Favorite Meals
-        conn.execute(drop_table_Fav_Meals)
-        conn.execute(create_table_Fav_Meals)
-        conn.commit()
+        #conn.execute(drop_table_Fav_Meals)
+        #conn.execute(create_table_Fav_Meals)
+        #conn.commit()
         #conn.execute(f"INSERT INTO FAV_MEALS (idUser, idMeal) VALUES (1, 848484);")
         #Favorite Ingredients
-        conn.execute(drop_table_Fav_Ingredients)
-        conn.execute(create_table_Fav_Ingredients)
-        conn.commit()
+        #conn.execute(drop_table_Fav_Ingredients)
+        #conn.execute(create_table_Fav_Ingredients)
+        #conn.commit()
         #conn.execute(f"INSERT INTO FAV_INGREDIENTS (idUser, idIngredient) VALUES (1, 848484);")
         #Setting starting point
         #conn.execute(insert_ingredients+f"(848483,'dummy');")
@@ -154,9 +155,9 @@ with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
         #print(conn.execute("SELECT * FROM INGREDIENTS").fetchall())
         #print(conn.execute("SELECT * FROM MEALS").fetchall())
         print(conn.execute("SELECT * FROM USERS").fetchall())
-        #print(conn.execute("SELECT * FROM FAV_MEALS").fetchall())
-        #print(conn.execute("SELECT * FROM FAV_INGREDIENTS").fetchall())
-        #print(conn.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall())
+        print(conn.execute("SELECT * FROM FAV_MEALS").fetchall())
+        print(conn.execute("SELECT * FROM FAV_INGREDIENTS").fetchall())
+        print(conn.execute("SELECT name FROM sqlite_master WHERE type='table';").fetchall())
     except sqlite3.OperationalError as e:
         print("Failed to open database:", e)
     except Exception as err:
