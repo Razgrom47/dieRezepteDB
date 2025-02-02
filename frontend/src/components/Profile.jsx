@@ -4,7 +4,6 @@ import LogoutTwoToneIcon from '@mui/icons-material/LogoutTwoTone';
 // ✅ handleLogout muss außerhalb der Profile-Komponente sein
 const handleLogout = () => {
   document.cookie = "authToken="; 
-  console.log("✅ Token gelöscht. Weiterleitung zu Login...");
   window.location.href = "/login"; // ⬅️ Nutzer nach dem Logout umleiten
 };
 

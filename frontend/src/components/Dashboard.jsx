@@ -196,7 +196,7 @@ function DemoPageContent() {
         },
       })
         .then(response => response.json())
-        .then(data => {setProfileMeals(data.meals.filtered); console.log(data)})
+        .then(data => setProfileMeals(data.meals.filtered))
         .catch(error => console.error('Error fetching meals:', error));
 
       fetch('http://192.168.178.86:7700/profile/get/ingredients/last/3', {
@@ -207,7 +207,7 @@ function DemoPageContent() {
         },
       })
         .then(response => response.json())
-        .then(data => {setProfileIngredients(data.ingredients.filtered); console.log(data)})
+        .then(data => setProfileIngredients(data.ingredients.filtered))
         .catch(error => console.error('Error fetching meals:', error));
       
       fetch('http://192.168.178.86:7700/profile', {
@@ -218,7 +218,7 @@ function DemoPageContent() {
         },
       })
         .then(response => response.json())
-        .then(data => {setProfile(data.profile); console.log(data);})
+        .then(data => setProfile(data.profile))
         .catch(error => console.error('Error fetching meals:', error));
     }
   }, [pathname]);
@@ -233,7 +233,7 @@ function DemoPageContent() {
         },
       })
         .then(response => response.json())
-        .then(data => {setProfileMeals(data.meals.filtered); console.log(data)})
+        .then(data => setProfileMeals(data.meals.filtered) )
         .catch(error => console.error('Error fetching meals:', error));
     }
   }, [pathname]);
@@ -249,7 +249,7 @@ function DemoPageContent() {
         },
       })
         .then(response => response.json())
-        .then(data => {setProfileIngredients(data.ingredients.filtered); console.log(data)})
+        .then(data => setProfileIngredients(data.ingredients.filtered))
         .catch(error => console.error('Error fetching ingredients:', error));
     }
   }, [pathname]);
@@ -285,7 +285,7 @@ function DemoPageContent() {
         },
       })
         .then(response => response.json())
-        .then(data => {setMeals(data.meals.filtered); console.log(data.meals.filtered);})
+        .then(data => setMeals(data.meals.filtered))
         .catch(error => console.error('Error fetching meals:', error));
     }
   }, [pathname, ingredient]);

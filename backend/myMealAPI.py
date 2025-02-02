@@ -488,7 +488,7 @@ def getUser():
             except Exception as err:
                 return(f"ERROR: {err}")
         try:
-            return jsonify({"profile":{"username":existingUser["strUser"], "country":"STANDARD..."},})
+            return jsonify({"profile":{"username":existingUser["strUser"], "country":existingUser["strCountry"]},})
         except:
             return jsonify({"user":"null"})
     except:
