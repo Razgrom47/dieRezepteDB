@@ -50,7 +50,7 @@ const like_meal = async (idMeal) => {
   try {
     console.log(idMeal)
     const token = getCookie('authToken'); // Token aus Cookie holen
-    const response = await fetch('http://192.168.178.86:7700/profile/like/meal/'+idMeal, {
+    const response = await fetch('http://127.0.0.1:7700/profile/like/meal/'+idMeal, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
