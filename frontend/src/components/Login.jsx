@@ -2,6 +2,7 @@ import { AppProvider } from '@toolpad/core/AppProvider';
 import { SignInPage } from '@toolpad/core/SignInPage';
 import { useTheme } from '@mui/material/styles';
 
+
 const providers = [{ id: 'credentials', name: 'Email and password' }];
 
 const signIn = async (provider, formData) => {
@@ -9,7 +10,7 @@ const signIn = async (provider, formData) => {
   const password = formData?.get('password');
 
   try {
-    const response = await fetch('http://192.168.178.86:7700/login', {
+    const response = await fetch('http://127.0.0.1:7700/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
