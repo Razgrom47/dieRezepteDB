@@ -22,7 +22,8 @@ import {
   BrowserRouter as Router,
   Routes,
   Route,
-  useLocation
+  useLocation,
+  data
 } from "react-router-dom";
 import Login from "./Login"
 import LoginTwoToneIcon from '@mui/icons-material/LoginTwoTone';
@@ -118,8 +119,8 @@ function DemoPageContent() {
         }
       )
         .then(response => response.json())
-        .then(data => setMeals(data.meals.filtered || data.meals))
-        .catch(error => console.error('Error fetching meals:', error));
+        .then(data => {setMeals(data.meals.filtered || data.meals);})
+        .catch(error => {console.error('Error fetching meals:', error);});
     }
   }, [pathname, query, param]);
 
@@ -302,36 +303,123 @@ function DemoPageContent() {
         {pathname === '/profile' && "Profile"}
       </Typography>
       
-      {/* Routing für Home-Seite */}
-      {pathname === '/home' && <Home areas={areas} latestMeals={home_meals} randomIngredients={home_ingredients} />}
-      
-      {/* Routing für Meals-Liste mit optionalen Filtern */}
-      {pathname === '/meals' && <MealsListe meals={meals} />}
-      {pathname === '/meals/area' && <MealsListe meals={meals} />}
-      {pathname === '/meals/category' && <MealsListe meals={meals} />}
-      {pathname === '/meals/ingredient' && <MealsListe meals={meals} />}
-      {pathname === '/meals/name' && <MealsListe meals={meals} />}
-      
-      {/* Routing für Meal-Details */}
-      {pathname === '/meal' && <Meal meal={meal} />}
-      
-      {/* Routing für Ingredient-Details */}
-      {pathname === '/ingredient' && <Ingredient ingredient={ingredient} meals={meals} />}
-      
-      {/* Routing für Ingredients-Liste */}
-      {pathname === '/ingredients' && <IngredientsListe ingredients={ingredients} />}
-      
-      {/* Routing für Profile-Seite */}
-      {pathname === '/profile' && <Profile profile={profile} profileMeals={profileMeals} profileIngredients={profileIngredients} />}
-      {pathname === '/profile/meals' && <MealsListe meals={profileMeals}/>}
-      {pathname === '/profile/ingredients' && <IngredientsListe ingredients={profileIngredients} />}
-      
-      {/* Routing für Profile-Seite */}
-      {pathname === '/datenschutz' && <Datenschutz />}
+      {pathname === '/home' && (
+  areas && home_meals && home_ingredients ? (
+    <Home 
+      areas={areas} 
+      latestMeals={home_meals} 
+      randomIngredients={home_ingredients} 
+    />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Startseite anzuzeigen.
+            </div>
+          )
+        )}
 
-      {/* Routing für Profile-Seite */}
-      {pathname === '/impressum' && <Impressum />}
-    </Box>
+        {pathname === '/meals' && (
+          meals && meals.length > 0 ? (
+            <MealsListe meals={meals} />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Mahlzeiten anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/meals/area' && (
+          meals && meals.length > 0 ? (
+            <MealsListe meals={meals} />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Mahlzeiten anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/meals/category' && (
+          meals && meals.length > 0 ? (
+            <MealsListe meals={meals} />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Mahlzeiten anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/meals/ingredient' && (
+          meals && meals.length > 0 ? (
+            <MealsListe meals={meals} />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Mahlzeiten anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/meals/name' && (
+          meals && meals.length > 0 ? (
+            <MealsListe meals={meals} />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Mahlzeiten anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/meal' && <Meal meal={meal} />}
+
+        {pathname === '/ingredient' && <Ingredient ingredient={ingredient} meals={meals} /> }
+
+        {pathname === '/ingredients' && (
+          ingredients && ingredients.length > 0 ? (
+            <IngredientsListe ingredients={ingredients} />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Zutaten anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/profile' && (
+          (profile && profileMeals && profileIngredients) ? (
+            <Profile 
+              profile={profile} 
+              profileMeals={profileMeals} 
+              profileIngredients={profileIngredients} 
+            />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um das Profil anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/profile/meals' && (
+          profileMeals && profileMeals.length > 0 ? (
+            <MealsListe meals={profileMeals} />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Profil-Mahlzeiten anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/profile/ingredients' && (
+          profileIngredients && profileIngredients.length > 0 ? (
+            <IngredientsListe ingredients={profileIngredients} />
+          ) : (
+            <div>
+              Bitte <a href="/login">loggen Sie sich ein</a>, um die Profil-Zutaten anzuzeigen.
+            </div>
+          )
+        )}
+
+        {pathname === '/datenschutz' && <Datenschutz />}
+
+        {pathname === '/impressum' && <Impressum />}
+
+      </Box>
   );
 }
 

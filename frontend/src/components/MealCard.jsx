@@ -1,19 +1,20 @@
 /* eslint-disable react/prop-types */
-  import * as React from 'react';
- import { styled } from '@mui/material/styles';
- import Card from '@mui/material/Card';
- import CardHeader from '@mui/material/CardHeader';
- import CardMedia from '@mui/material/CardMedia';
- import CardContent from '@mui/material/CardContent';
- import CardActions from '@mui/material/CardActions';
- import Collapse from '@mui/material/Collapse';
- import IconButton from '@mui/material/IconButton';
- import Typography from '@mui/material/Typography';
- import FavoriteIcon from '@mui/icons-material/Favorite';
- import ShareIcon from '@mui/icons-material/Share';
- import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
- import MoreVertIcon from '@mui/icons-material/MoreVert';
+import * as React from 'react';
+import { styled } from '@mui/material/styles';
+import Card from '@mui/material/Card';
+import CardHeader from '@mui/material/CardHeader';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import CardActions from '@mui/material/CardActions';
+import Collapse from '@mui/material/Collapse';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import ShareIcon from '@mui/icons-material/Share';
+import ThumbDownTwoToneIcon from '@mui/icons-material/ThumbDownTwoTone';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { Button } from '@mui/material';
+import Tooltip from '@mui/material/Tooltip';
 
 
 const ExpandMore = styled((props) => {
@@ -74,21 +75,68 @@ const like_meal = async (idMeal) => {
   }
  }
 
+ 
+const dislike_meal = async (idMeal) => {
+  try {
+    console.log(idMeal)
+    const token = getCookie('authToken'); // Token aus Cookie holen
+    const response = await fetch('http://127.0.0.1:7700/profile/dislike/meal/'+idMeal, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+      },
+    })
+      .then(response => response.json())
+      .catch(error => console.error('Error fetching meals:', error));
 
+    if (response.ok == false) {
+      const error = await response.text();
+      alert(`Login failed: ${error.message}`);
+      return { type: 'CredentialsSignin', error: error.message || 'Invalid credentials.' };
+    }
+    alert(`Unsaved successful! This meal is not stored in your gallery anymore.`);
+   
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('An unexpected error occurred. Please try again.');
+    return { type: 'CredentialsSignin', error: error.message || 'Unexpected error occurred.' };
+  }
+ }
+
+ 
  export default function MealRecipeReviewCard({meal}) {
+  
    const [expanded, setExpanded] = React.useState(false);
    const handleExpandClick = () => {
      setExpanded(!expanded);
-   };
- 
+    };
+    const [copied, setCopied] = React.useState(false);
+    
+    const handleCopyLink = () => {
+      const mealLink = 'http://127.0.0.1:5173'+'/meal?mealQuery='+meal.strMeal.replace(" ", "%20").replace("&", "%26");
+      
+      navigator.clipboard
+      .writeText(mealLink)
+      .then(() => {
+        setCopied(true);
+        // Optionally reset the tooltip text after 2 seconds
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000);
+      })
+      .catch((err) => console.error("Failed to copy:", err));
+    };
    
    return (
      <Card sx={{ width: "22rem",  minHeight:"69vh" }}>
        <CardHeader
          action={
-           <IconButton aria-label="settings">
-             <MoreVertIcon />
+          <Tooltip onClick={handleCopyLink}  title={copied ? "Copied" : "Copy"} >
+           <IconButton onClick={()=>{handleCopyLink(meal.strMeal)}}  aria-label="settings">
+             <ShareIcon />
            </IconButton>
+           </Tooltip>
          }
          subheader={meal.strCategory}
          title={meal.strMeal}
@@ -126,8 +174,8 @@ const like_meal = async (idMeal) => {
          <IconButton onClick={()=>{like_meal(meal.idMeal)}}   aria-label="add to favorites">
            <FavoriteIcon />
          </IconButton>
-         <IconButton aria-label="share">
-           <ShareIcon />
+         <IconButton onClick={()=>{dislike_meal(meal.idMeal)}}aria-label="share">
+           <ThumbDownTwoToneIcon  />
          </IconButton>
          <ExpandMore
            expand={expanded}
@@ -146,6 +194,7 @@ const like_meal = async (idMeal) => {
            </Typography>
          </CardContent>
        </Collapse>
+       
      </Card>
    );
  }

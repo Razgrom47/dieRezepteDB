@@ -12,7 +12,9 @@ import Typography from '@mui/material/Typography';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
+import ThumbDownTwoToneIcon from '@mui/icons-material/ThumbDownTwoTone';
+import Tooltip from '@mui/material/Tooltip';
+
 
 const ExpandMore = styled((props) => {
   // eslint-disable-next-line no-unused-vars
@@ -73,6 +75,35 @@ const like_ingredient = async (idIngredient) => {
   }
  }
 
+ 
+const dislike_ingredient = async (idIngredient) => {
+  try {
+    console.log(idIngredient)
+    const token = getCookie('authToken'); // Token aus Cookie holen
+    const response = await fetch('http://127.0.0.1:7700/profile/dislike/ingredient/'+idIngredient, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}` // Setze den Authorization-Header
+      },
+    })
+      .then(response => response.json())
+      .catch(error => console.error('Error fetching meals:', error));
+
+    if (response.ok == false) {
+      const error = await response.text();
+      alert(`Login failed: ${error.message}`);
+      return { type: 'CredentialsSignin', error: error.message || 'Invalid credentials.' };
+    }
+    alert(`Unsaved successful! This ingredient is not stored in your gallery anymore.`);
+   
+  } catch (error) {
+    console.error('Login error:', error);
+    alert('An unexpected error occurred. Please try again.');
+    return { type: 'CredentialsSignin', error: error.message || 'Unexpected error occurred.' };
+  }
+ }
+
 
 export default function MealRecipeReviewCard({ ingredient }) {
   const [expanded, setExpanded] = React.useState(false);
@@ -80,14 +111,34 @@ export default function MealRecipeReviewCard({ ingredient }) {
   const handleExpandClick = () => {
     setExpanded(!expanded);
   };
-
+    const [copied, setCopied] = React.useState(false);
+    
+    const handleCopyLink = () => {
+      const ingredientlink = 'http://127.0.0.1:5173'+"/ingredient?ingredientQuery="+ingredient.strIngredient.replace(" ", "%20").replace("&", "%26");
+      
+      navigator.clipboard
+      .writeText(ingredientlink)
+      .then(() => {
+        setCopied(true);
+        // Optionally reset the tooltip text after 2 seconds
+        setTimeout(() => {
+          setCopied(false);
+        }, 2000);
+      })
+      .catch((err) => console.error("Failed to copy:", err));
+    };
+   
   return (
     <Card sx={{ width: "22rem", minHeight:"45vh" }}>
       <CardHeader
         action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
+          
+          <Tooltip onClick={handleCopyLink}  title={copied ? "Copied" : "Copy"} >
+           
+          <IconButton onClick={()=>{handleCopyLink(ingredient.strMeal)}}  aria-label="settings">
+            <ShareIcon />
           </IconButton>
+          </Tooltip>
         }
         title={ingredient.strIngredient}
       />
@@ -108,9 +159,9 @@ export default function MealRecipeReviewCard({ ingredient }) {
         <IconButton onClick={()=>{like_ingredient(ingredient.idIngredient)}} aria-label="add to favorites">
           <FavoriteIcon />
         </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
+         <IconButton onClick={()=>{dislike_ingredient(ingredient.idIngredient)}}aria-label="share">
+           <ThumbDownTwoToneIcon  />
+         </IconButton>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}

@@ -517,6 +517,31 @@ def getUserLikeMeal(idMeal):
                 return jsonify({"user":"null"})
     except:
         return jsonify({"error":"data not found"})
+    
+
+@app.route("/profile/dislike/meal/<idMeal>", methods=["POST"])
+@token_required
+def getUserDislikeMeal(idMeal):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                #print(token["user"])
+                conn.row_factory = sqlite3.Row
+                userId=[dict(row)["idUser"] for row in conn.execute(f"SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]
+                conn.execute(f"DELETE FROM FAV_MEALS WHERE idUser={int(userId)} AND idMeal={int(idMeal)};")
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                print(err)
+                return(jsonify({f"ERROR: {err}"}))
+            try:
+                return jsonify({"message":"disliked successfully"})
+            except:
+                return jsonify({"user":"null"})
+    except:
+        return jsonify({"error":"data not found"})
 
 @app.route("/profile/like/ingredient/<idIngredient>", methods=["POST"])
 @token_required
@@ -537,6 +562,32 @@ def getUserLikeIngredient(idIngredient):
                 return(jsonify({f"ERROR: {err}"}))
             try:
                 return jsonify({"message":"liked successfully"})
+            except:
+                return jsonify({"user":"null"})
+    except:
+        return jsonify({"error":"data not found"})
+    
+        
+
+@app.route("/profile/dislike/ingredient/<idIngredient>", methods=["POST"])
+@token_required
+def getUserDislikeIngredient(idIngredient):
+    try:
+        with sqlite3.connect(cwd+r"\themealdb\myDB.db") as conn:
+            try:
+                print(f"Opened SQLite database with version {sqlite3.sqlite_version} successfully.")
+                token=jwt.decode(request.authorization.token, app.config["SECRET_KEY"], algorithms=["HS256"])
+                #print(token["user"])
+                conn.row_factory = sqlite3.Row
+                userId=[dict(row)["idUser"] for row in conn.execute(f"SELECT * FROM USERS WHERE strUser='"+token["user"]+"';").fetchall()][0]
+                conn.execute(f"DELETE FROM FAV_INGREDIENTS WHERE idUser={int(userId)} AND idIngredient={int(idIngredient)};")
+            except sqlite3.OperationalError as e:
+                return("Failed to open database:", e)
+            except Exception as err:
+                print(err)
+                return(jsonify({f"ERROR: {err}"}))
+            try:
+                return jsonify({"message":"disliked successfully"})
             except:
                 return jsonify({"user":"null"})
     except:
