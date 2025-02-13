@@ -10,7 +10,8 @@ def ingredient_to_dict(ingredient):
     return {
         'idIngredient': ingredient.idIngredient,
         'strIngredient': ingredient.strIngredient,
-        'strType': ingredient.strType
+        'strType': ingredient.strType,
+        'pathImageIngredient': ingredient.pathImageIngredient
     }
 
 @ingredients_bp.route('/ingredients/', methods=['GET'])

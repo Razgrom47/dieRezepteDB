@@ -40,6 +40,7 @@ class Meal(db.Model):
     strArea = db.Column(db.String(80))
     strCategory = db.Column(db.String(80))
     strTags = db.Column(db.String(255))
+    pathImageMeal = db.Column(db.String(255))
 
 
 class Ingredient(db.Model):
@@ -47,6 +48,7 @@ class Ingredient(db.Model):
     idIngredient = db.Column(db.Integer, primary_key=True)
     strIngredient = db.Column(db.String(255), nullable=False)
     strType = db.Column(db.String(255))
+    pathImageIngredient = db.Column(db.String(255))
 
 class FavMeal(db.Model):
     __tablename__ = 'FAV_MEALS'

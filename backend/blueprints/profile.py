@@ -32,14 +32,16 @@ def meal_to_dict(meal):
         'strIngredient20': meal.strIngredient20,
         'strArea': meal.strArea,
         'strCategory': meal.strCategory,
-        'strTags': meal.strTags
+        'strTags': meal.strTags,
+        "pathImageMeal" : meal.pathImageMeal
     }
 
 def ingredient_to_dict(ingredient):
     return {
         'idIngredient': ingredient.idIngredient,
         'strIngredient': ingredient.strIngredient,
-        'strType': ingredient.strType
+        'strType': ingredient.strType,
+        'pathImageIngredient': ingredient.pathImageIngredient
     }
 
 @profile_bp.route('/profile', methods=['GET'])

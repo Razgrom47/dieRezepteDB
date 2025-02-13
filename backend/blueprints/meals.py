@@ -31,7 +31,8 @@ def meal_to_dict(meal):
         'strIngredient20': meal.strIngredient20,
         'strArea': meal.strArea,
         'strCategory': meal.strCategory,
-        'strTags': meal.strTags
+        'strTags': meal.strTags,
+        "pathImageMeal" : meal.pathImageMeal
     }
 
 @meals_bp.route('/meals/', methods=['GET'])
