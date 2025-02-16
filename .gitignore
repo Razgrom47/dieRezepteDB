@@ -2,8 +2,6 @@
 /backend/myMealAPI.py
 /backend/__pycache__/
 /backend/blueprints/__pycache__/
-/backend/sqlquery.py
-/backend/test.py
+/backend/backup/sqlquery.py
+/backend/backup/test.py 
 /frontend/node_modules/
-/frontend/package.json
-/frontend/package-lock.json

@@ -41,6 +41,8 @@ class Meal(db.Model):
     strCategory = db.Column(db.String(80))
     strTags = db.Column(db.String(255))
     pathImageMeal = db.Column(db.String(255))
+    strYoutube = db.Column(db.String(255))
+    strInstructions = db.Column(db.String(6255))
 
 
 class Ingredient(db.Model):
